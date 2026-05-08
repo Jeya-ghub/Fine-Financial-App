@@ -194,22 +194,34 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
     const payload = {
       workspace_id: workspaceId,
       category_id: categoryId,
-      subcategory_id: subcategoryId,
+      subcategory_id: subcategoryId || undefined,
       amount: Math.abs(parseFloat(amount)),
       type,
       description: description.trim(),
       date,
     }
     
-    // 1. Dispatch optimistic operation instantly
-    dispatchExternalOperation(workspaceId, 'CREATE', undefined, payload)
+    try {
+      // 1. Call server action
+      const result = await createTransaction(payload)
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save transaction')
+      }
 
-    // 2. Show instant success UI and close
-    setSuccess(true)
-    setLoading(false)
-    setTimeout(() => {
-      setIsOpen(false)
-    }, 1500)
+      // 2. Dispatch optimistic operation for context update
+      dispatchExternalOperation(workspaceId, 'CREATE', undefined, payload)
+
+      // 3. Show success UI and close
+      setSuccess(true)
+      setLoading(false)
+      setTimeout(() => {
+        setIsOpen(false)
+      }, 1500)
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred')
+      setLoading(false)
+    }
   }
 
   const filteredCategories = categories.filter(c => c.type === type)
