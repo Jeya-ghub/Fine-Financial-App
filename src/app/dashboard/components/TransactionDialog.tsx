@@ -70,7 +70,7 @@ const CustomSelect = ({
         <ChevronDown className={cn("absolute right-4 w-4 h-4 text-zinc-600 transition-transform", isOpen && "rotate-180")} />
       </button>
       
-      {required && <input type="text" className="absolute opacity-0 w-full h-full top-0 left-0 pointer-events-none -z-10" value={value} required readOnly tabIndex={-1} />}
+      {required && !disabled && <input type="text" className="absolute opacity-0 w-full h-full top-0 left-0 pointer-events-none -z-10" value={value} required readOnly tabIndex={-1} />}
 
       <AnimatePresence>
         {isOpen && !disabled && (
@@ -317,7 +317,6 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
                         onChange={setSubcategoryId}
                         placeholder="Select..."
                         disabled={!categoryId || filteredSubcategories.length === 0}
-                        required
                       />
                     </div>
                   </div>
