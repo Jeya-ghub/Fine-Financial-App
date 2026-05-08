@@ -4,6 +4,7 @@ import { getCategoriesWithSubs } from '@/app/actions/categories'
 import { redirect } from 'next/navigation'
 import Sidebar from './components/Sidebar'
 import DashboardHeader from './components/DashboardHeader'
+import TransactionDialog from './components/TransactionDialog'
 import { DashboardProvider } from '@/components/providers/DashboardProvider'
 
 import { Suspense } from 'react'
@@ -57,6 +58,11 @@ export default async function DashboardLayout({
             </div>
           </main>
         </div>
+        <TransactionDialog 
+          workspaceId={activeWorkspace.id} 
+          categories={categories as any} 
+          showTrigger={false}
+        />
       </div>
     </DashboardProvider>
   )

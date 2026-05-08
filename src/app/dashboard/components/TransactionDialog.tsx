@@ -22,6 +22,7 @@ type Category = {
 type TransactionDialogProps = {
   workspaceId: string
   categories: Category[]
+  showTrigger?: boolean
 }
 
 const CustomSelect = ({ 
@@ -109,7 +110,7 @@ const CustomSelect = ({
   )
 }
 
-export default function TransactionDialog({ workspaceId, categories }: TransactionDialogProps) {
+export default function TransactionDialog({ workspaceId, categories, showTrigger = true }: TransactionDialogProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -356,11 +357,11 @@ export default function TransactionDialog({ workspaceId, categories }: Transacti
     </AnimatePresence>
   )
 
-  if (!mounted) return triggerButton
+  if (!mounted) return showTrigger ? triggerButton : null
 
   return (
     <>
-      {triggerButton}
+      {showTrigger && triggerButton}
       {createPortal(modalContent, document.body)}
     </>
   )
