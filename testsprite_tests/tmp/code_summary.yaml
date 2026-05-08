@@ -1,0 +1,76 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js 16 (App Router)
+  - React 19
+  - Supabase
+  - Tailwind CSS 4
+  - Framer Motion
+  - Recharts
+  - Upstash Redis (OTP)
+routes:
+  - path: /auth
+    file: src/app/auth/page.tsx
+    auth_required: false
+    description: Authentication portal for OTP sign-in
+  - path: /dashboard
+    file: src/app/dashboard/page.tsx
+    auth_required: true
+    description: Main financial overview dashboard
+  - path: /dashboard/transactions
+    file: src/app/dashboard/transactions/page.tsx
+    auth_required: true
+    description: Transaction ledger with filters and editing
+  - path: /dashboard/reports
+    file: src/app/dashboard/reports/page.tsx
+    auth_required: true
+    description: Financial reports and data export
+features:
+  - name: Workspace Authentication
+    description: Login using email and 6-digit OTP stored in Redis
+    files:
+      - src/app/auth/page.tsx
+      - src/app/actions/auth.ts
+    entry_route: /auth
+    user_interactions:
+      - Enter email address
+      - Click "Get Code"
+      - Enter 6-digit OTP
+      - Click "Verify & Enter"
+    api_calls:
+      - method: POST
+        endpoint: /api/auth
+    auth_required: false
+  - name: Transaction Management
+    description: Create and manage financial transactions with optimistic locking
+    files:
+      - src/app/dashboard/transactions/TransactionsClient.tsx
+      - src/app/actions/transactions.ts
+    entry_route: /dashboard/transactions
+    user_interactions:
+      - Click "New Transaction"
+      - Select Category and Type
+      - Enter Amount and Date
+      - Click "Save Transaction"
+      - Edit existing transaction via drawer
+      - Delete transaction with confirmation
+    api_calls:
+      - method: POST
+        endpoint: /api/transactions (Server Actions)
+    auth_required: true
+  - name: Financial Reporting
+    description: View spending patterns and export data
+    files:
+      - src/app/dashboard/reports/ReportsClient.tsx
+      - src/app/actions/reports.ts
+    entry_route: /dashboard/reports
+    user_interactions:
+      - Toggle date range filters
+      - View category distribution pie chart
+      - Export to PDF or Excel
+    auth_required: true
+known_limitations:
+  - issue: Redis OTP depends on external service connectivity
+    location: src/lib/redis/client.ts
+    impact: Auth fails if Redis is unreachable

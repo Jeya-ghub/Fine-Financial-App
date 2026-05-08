@@ -1,0 +1,98 @@
+{
+  "nodes": [
+    {
+      "id": "readme_project",
+      "label": "Fine Finance App",
+      "file_type": "document",
+      "source_file": "README.md"
+    },
+    {
+      "id": "agents_rules",
+      "label": "AI Operating Rules",
+      "file_type": "document",
+      "source_file": "AGENTS.md"
+    },
+    {
+      "id": "claude_devguide",
+      "label": "Developer Guide",
+      "file_type": "document",
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "antigravity_behavior",
+      "label": "Antigravity Core Behavior",
+      "file_type": "document",
+      "source_file": "antigravety-agent.md"
+    },
+    {
+      "id": "pattern_optimistic_concurrency",
+      "label": "Optimistic Concurrency Pattern",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "pattern_multi_tenant_isolation",
+      "label": "Multi-tenant Workspace Isolation",
+      "file_type": "rationale",
+      "source_file": "testsprite_tests/tmp/code_summary.yaml"
+    },
+    {
+      "id": "risk_redis_dependency",
+      "label": "Auth-to-Redis Latent Coupling",
+      "file_type": "rationale",
+      "source_file": "src/lib/redis/client.ts"
+    },
+    {
+      "id": "philosophy_zero_lag",
+      "label": "Zero-Lag UI Philosophy",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md"
+    }
+  ],
+  "edges": [
+    {
+      "source": "philosophy_zero_lag",
+      "target": "pattern_optimistic_concurrency",
+      "relation": "enables",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "source": "feature_otp_auth",
+      "target": "risk_redis_dependency",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/redis/client.ts"
+    },
+    {
+      "source": "pattern_multi_tenant_isolation",
+      "target": "actions_workspaces_getactiveworkspaceid",
+      "relation": "implemented_by",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/app/actions/workspaces.ts"
+    },
+    {
+      "source": "design_glassmorphism",
+      "target": "philosophy_zero_lag",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "CLAUDE.md"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "auth_flow_nexus",
+      "label": "Core Authentication Nexus",
+      "nodes": ["feature_otp_auth", "src_middleware_ts", "src_lib_supabase_server_ts"],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

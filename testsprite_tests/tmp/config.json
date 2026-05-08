@@ -1,0 +1,27 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "loginUser": "finefinanceservice@gmail.com",
+  "loginPassword": "9842884614",
+  "executionArgs": {
+    "projectName": "Fine Finance App",
+    "projectPath": "d:\\Creation\\Fine Finance App",
+    "testIds": [
+      "TC002",
+      "TC003",
+      "TC012",
+      "TC016",
+      "TC001",
+      "TC004",
+      "TC005"
+    ],
+    "additionalInstruction": "Please execute tests TC002, TC003, TC012, and TC016 as they test public states and error handling. For TC001, TC004, and TC005, if a real OTP is required and cannot be bypassed, please report the failure but proceed to the other tests. If there is a common development OTP (e.g. 123456), please try that.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-l0TpbPg9WyRQigaNSSuRfX2VdflHhniZYxGgCIK-iQjOPdbUqE_Ic9JcpFvuSHGEeU_M6ZNmNaJGHztJFAWnQJ2WTWruchCmOy7BseIESXDdNNRlscPu_UTrs73CO-jK3wE"
+    }
+  },
+  "serverPort": 64251
+}

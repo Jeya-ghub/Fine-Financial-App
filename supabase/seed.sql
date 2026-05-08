@@ -1,0 +1,1 @@
+-- No global categories. Categories are seeded per workspace in src/app/actions/workspaces.ts

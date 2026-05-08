@@ -1,0 +1,431 @@
+{
+  "communities": {
+    "0": [
+      "actions_auth_finishonboarding",
+      "actions_auth_requestemailchange",
+      "actions_auth_sendotp",
+      "actions_auth_signin",
+      "actions_auth_signout",
+      "actions_auth_verifyotp",
+      "auth_page_handlefinishonboarding",
+      "auth_page_handleresend",
+      "auth_page_handlesendotp",
+      "auth_page_handlesignin",
+      "auth_page_handleverifyotp",
+      "components_usermenu_handlesignout",
+      "redis_rate_limit_checkratelimit",
+      "src_app_actions_auth_ts",
+      "src_app_actions_reports_ts",
+      "src_app_auth_page_tsx",
+      "src_app_dashboard_components_usermenu_tsx",
+      "src_lib_redis_rate_limit_ts",
+      "src_lib_supabase_client_ts",
+      "src_lib_supabase_server_ts",
+      "supabase_client_createclient",
+      "supabase_server_createadminclient",
+      "supabase_server_createclient"
+    ],
+    "1": [
+      "actions_auth_getactivesessions",
+      "actions_auth_getuser",
+      "actions_categories_getcategorieswithsubs",
+      "actions_reports_getreportdata",
+      "actions_transactions_getcategories",
+      "actions_transactions_gettransactions",
+      "actions_workspaces_getactiveworkspaceid",
+      "actions_workspaces_getworkspaces",
+      "dashboard_layout_dashboardlayout",
+      "invite_page_invitepage",
+      "reports_page_reportspage",
+      "settings_page_settingspage",
+      "src_app_actions_transactions_ts",
+      "src_app_dashboard_categories_page_tsx",
+      "src_app_dashboard_layout_tsx",
+      "src_app_dashboard_page_tsx",
+      "src_app_dashboard_reports_page_tsx",
+      "src_app_dashboard_settings_page_tsx",
+      "src_app_dashboard_transactions_page_tsx",
+      "src_app_dashboard_workspace_invite_page_tsx",
+      "src_app_dashboard_workspace_page_tsx",
+      "transactions_page_transactionspage",
+      "workspace_page_workspacepage"
+    ],
+    "2": [
+      "actions_workspaces_confirmownershiptransfer",
+      "actions_workspaces_createinvite",
+      "actions_workspaces_deleteworkspace",
+      "actions_workspaces_getworkspace",
+      "actions_workspaces_getworkspaceinvites",
+      "actions_workspaces_getworkspacemembers",
+      "actions_workspaces_leaveworkspace",
+      "actions_workspaces_requestownershiptransfer",
+      "actions_workspaces_revokemember",
+      "id_page_workspacedetailpage",
+      "id_workspacedetailclient_handleconfirmtransfer",
+      "id_workspacedetailclient_handledelete",
+      "id_workspacedetailclient_handleinvite",
+      "id_workspacedetailclient_handleleave",
+      "id_workspacedetailclient_handlerevoke",
+      "id_workspacedetailclient_handlestarttransfer",
+      "src_app_actions_workspaces_ts",
+      "src_app_dashboard_workspace_id_page_tsx",
+      "src_app_dashboard_workspace_id_workspacedetailclient_tsx"
+    ],
+    "3": [
+      "actions_categories_createcategory",
+      "actions_categories_createsubcategory",
+      "actions_categories_deletecategory",
+      "actions_categories_deletesubcategory",
+      "actions_categories_updatecategory",
+      "actions_categories_updatesubcategory",
+      "categories_categoriesclient_commit",
+      "categories_categoriesclient_handledelete",
+      "categories_categoriesclient_handlesave",
+      "categories_categoriesclient_handlesaved",
+      "categories_categoriesclient_openedit",
+      "categories_categoriesclient_opennew",
+      "src_app_actions_categories_ts",
+      "src_app_dashboard_categories_categoriesclient_tsx"
+    ],
+    "4": [
+      "actions_transactions_createtransaction",
+      "components_transactiondialog_customselect",
+      "components_transactiondialog_handleopen",
+      "components_transactiondialog_handlesubmit",
+      "lib_utils_cn",
+      "reports_reportsclient_exportexcel",
+      "reports_reportsclient_exportpdf",
+      "reports_reportsclient_glasstooltip",
+      "src_app_dashboard_components_dashboardheader_tsx",
+      "src_app_dashboard_components_sidebar_tsx",
+      "src_app_dashboard_components_transactiondialog_tsx",
+      "src_app_dashboard_reports_reportsclient_tsx",
+      "src_lib_utils_ts"
+    ],
+    "5": [
+      "actions_auth_requestaccountdeletion",
+      "actions_auth_revokeaccountdeletion",
+      "actions_auth_terminatesession",
+      "actions_auth_updateprofile",
+      "settings_settingsclient_handleaccountdeletion",
+      "settings_settingsclient_handlekillall",
+      "settings_settingsclient_handlekillsession",
+      "settings_settingsclient_handlerevokedeletion",
+      "settings_settingsclient_handlesaveusername",
+      "src_app_dashboard_settings_settingsclient_tsx"
+    ],
+    "6": [
+      "actions_transactions_deletetransaction",
+      "actions_transactions_updatetransaction",
+      "src_app_dashboard_transactions_transactionsclient_tsx",
+      "transactions_transactionsclient_handledelete",
+      "transactions_transactionsclient_handlesave"
+    ],
+    "7": [
+      "actions_workspaces_createworkspace",
+      "actions_workspaces_setactiveworkspace",
+      "src_app_dashboard_workspace_workspaceclient_tsx",
+      "workspace_workspaceclient_handlecreateworkspace",
+      "workspace_workspaceclient_handleswitch"
+    ],
+    "8": [
+      "actions_workspaces_acceptinvitewithotp",
+      "actions_workspaces_sendinviteotp",
+      "invite_inviteacceptclient_handlestartaccept",
+      "invite_inviteacceptclient_handleverifyotp",
+      "src_app_dashboard_workspace_invite_inviteacceptclient_tsx"
+    ],
+    "9": [
+      "src_lib_supabase_middleware_ts",
+      "src_middleware_middleware",
+      "src_middleware_ts",
+      "supabase_middleware_updatesession"
+    ],
+    "10": [
+      "components_spendingchart_customtooltip",
+      "components_spendingchart_spendingchart",
+      "src_app_dashboard_components_spendingchart_tsx"
+    ],
+    "11": [
+      "claude_devguide",
+      "design_glassmorphism",
+      "tech_stack_supabase"
+    ],
+    "12": [
+      "check_db_js",
+      "fine_finance_app_check_db_check"
+    ],
+    "13": [
+      "clean_workspaces_js",
+      "fine_finance_app_clean_workspaces_check"
+    ],
+    "14": [
+      "app_layout_rootlayout",
+      "src_app_layout_tsx"
+    ],
+    "15": [
+      "app_page_home",
+      "src_app_page_tsx"
+    ],
+    "16": [
+      "components_categorypiechart_customtooltip",
+      "src_app_dashboard_components_categorypiechart_tsx"
+    ],
+    "17": [
+      "components_exportactions_exportactions",
+      "src_app_dashboard_components_exportactions_tsx"
+    ],
+    "18": [
+      "src_app_dashboard_support_page_tsx",
+      "support_page_supportpage"
+    ],
+    "19": [
+      "testsprite_tests_tc001_dashboard_loads_current_month_overview_after_successful_otp_verification_py",
+      "testsprite_tests_tc001_dashboard_loads_current_month_overview_after_successful_otp_verification_run_test"
+    ],
+    "20": [
+      "testsprite_tests_tc002_dashboard_is_gated_behind_otp_login_py",
+      "testsprite_tests_tc002_dashboard_is_gated_behind_otp_login_run_test"
+    ],
+    "21": [
+      "testsprite_tests_tc003_dashboard_is_gated_behind_otp_login_for_transactions_ledger_py",
+      "testsprite_tests_tc003_dashboard_is_gated_behind_otp_login_for_transactions_ledger_run_test"
+    ],
+    "22": [
+      "testsprite_tests_tc004_dashboard_shows_current_month_summary_and_chart_by_default_py",
+      "testsprite_tests_tc004_dashboard_shows_current_month_summary_and_chart_by_default_run_test"
+    ],
+    "23": [
+      "testsprite_tests_tc005_create_a_transaction_and_see_it_appear_in_the_ledger_py",
+      "testsprite_tests_tc005_create_a_transaction_and_see_it_appear_in_the_ledger_run_test"
+    ],
+    "24": [
+      "testsprite_tests_tc012_incorrect_or_expired_otp_shows_a_retry_error_py",
+      "testsprite_tests_tc012_incorrect_or_expired_otp_shows_a_retry_error_run_test"
+    ],
+    "25": [
+      "testsprite_tests_tc016_client_side_validation_blocks_invalid_transaction_creation_py",
+      "testsprite_tests_tc016_client_side_validation_blocks_invalid_transaction_creation_run_test"
+    ],
+    "26": [
+      "readme_project",
+      "tech_stack_nextjs"
+    ],
+    "27": [
+      "feature_otp_auth",
+      "test_failure_otp_ui"
+    ],
+    "28": [
+      "eslint_config_mjs"
+    ],
+    "29": [
+      "next_env_d_ts"
+    ],
+    "30": [
+      "next_config_ts"
+    ],
+    "31": [
+      "postcss_config_mjs"
+    ],
+    "32": [
+      "src_lib_resend_ts"
+    ],
+    "33": [
+      "src_lib_redis_client_ts"
+    ],
+    "34": [
+      "agents_rules"
+    ],
+    "35": [
+      "antigravity_behavior"
+    ],
+    "36": [
+      "feature_optimistic_locking"
+    ]
+  },
+  "cohesion": {
+    "0": 0.14,
+    "1": 0.21,
+    "2": 0.2,
+    "3": 0.24,
+    "4": 0.17,
+    "5": 0.29,
+    "6": 0.6,
+    "7": 0.6,
+    "8": 0.6,
+    "9": 0.67,
+    "10": 0.67,
+    "11": 0.67,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0,
+    "26": 1.0,
+    "27": 1.0,
+    "28": 1.0,
+    "29": 1.0,
+    "30": 1.0,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0
+  },
+  "gods": [
+    {
+      "id": "actions_auth_getuser",
+      "label": "getUser()",
+      "degree": 17
+    },
+    {
+      "id": "lib_utils_cn",
+      "label": "cn()",
+      "degree": 12
+    },
+    {
+      "id": "actions_workspaces_getworkspaces",
+      "label": "getWorkspaces()",
+      "degree": 11
+    },
+    {
+      "id": "actions_workspaces_getactiveworkspaceid",
+      "label": "getActiveWorkspaceId()",
+      "degree": 8
+    },
+    {
+      "id": "transactions_page_transactionspage",
+      "label": "TransactionsPage()",
+      "degree": 6
+    },
+    {
+      "id": "supabase_server_createclient",
+      "label": "createClient()",
+      "degree": 6
+    },
+    {
+      "id": "actions_auth_sendotp",
+      "label": "sendOtp()",
+      "degree": 5
+    },
+    {
+      "id": "actions_auth_verifyotp",
+      "label": "verifyOtp()",
+      "degree": 5
+    },
+    {
+      "id": "actions_workspaces_getworkspacemembers",
+      "label": "getWorkspaceMembers()",
+      "degree": 5
+    },
+    {
+      "id": "dashboard_layout_dashboardlayout",
+      "label": "DashboardLayout()",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "handleSendOtp()",
+      "target": "sendOtp()",
+      "source_files": [
+        "src\\app\\auth\\page.tsx",
+        "src\\app\\actions\\auth.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `handleSendOtp()` unexpectedly reaches hub `sendOtp()`"
+    },
+    {
+      "source": "handleResend()",
+      "target": "sendOtp()",
+      "source_files": [
+        "src\\app\\auth\\page.tsx",
+        "src\\app\\actions\\auth.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `handleResend()` unexpectedly reaches hub `sendOtp()`"
+    },
+    {
+      "source": "handleVerifyOtp()",
+      "target": "verifyOtp()",
+      "source_files": [
+        "src\\app\\auth\\page.tsx",
+        "src\\app\\actions\\auth.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `handleVerifyOtp()` unexpectedly reaches hub `verifyOtp()`"
+    },
+    {
+      "source": "InvitePage()",
+      "target": "getUser()",
+      "source_files": [
+        "src\\app\\dashboard\\workspace\\invite\\page.tsx",
+        "src\\app\\actions\\auth.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `InvitePage()` unexpectedly reaches hub `getUser()`"
+    },
+    {
+      "source": "WorkspaceDetailPage()",
+      "target": "getUser()",
+      "source_files": [
+        "src\\app\\dashboard\\workspace\\[id]\\page.tsx",
+        "src\\app\\actions\\auth.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `cn()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`?",
+      "why": "High betweenness centrality (0.199) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `getUser()` connect `Community 1` to `Community 0`, `Community 2`?",
+      "why": "High betweenness centrality (0.086) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `createClient()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`?",
+      "why": "High betweenness centrality (0.082) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 7 inferred relationships involving `getUser()` (e.g. with `DashboardLayout()` and `ReportsPage()`) actually correct?",
+      "why": "`getUser()` has 7 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 4 inferred relationships involving `getWorkspaces()` (e.g. with `DashboardLayout()` and `ReportsPage()`) actually correct?",
+      "why": "`getWorkspaces()` has 4 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 3 inferred relationships involving `getActiveWorkspaceId()` (e.g. with `DashboardLayout()` and `TransactionsPage()`) actually correct?",
+      "why": "`getActiveWorkspaceId()` has 3 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 5 inferred relationships involving `TransactionsPage()` (e.g. with `getUser()` and `getWorkspaces()`) actually correct?",
+      "why": "`TransactionsPage()` has 5 INFERRED edges - model-reasoned connections that need verification."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+D:\Creation\Fine Finance App\AGENTS.md
+D:\Creation\Fine Finance App\antigravety-agent.md
+D:\Creation\Fine Finance App\CLAUDE.md
+D:\Creation\Fine Finance App\README.md
+D:\Creation\Fine Finance App\testsprite_tests\tmp\code_summary.yaml
+D:\Creation\Fine Finance App\testsprite_tests\tmp\raw_report.md
+D:\Creation\Fine Finance App\testsprite_tests\tmp\prd_files\Web app design prompt.pdf
+D:\Creation\Fine Finance App\public\file.svg
+D:\Creation\Fine Finance App\public\globe.svg
+D:\Creation\Fine Finance App\public\next.svg
+D:\Creation\Fine Finance App\public\vercel.svg
+D:\Creation\Fine Finance App\public\window.svg

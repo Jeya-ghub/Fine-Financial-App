@@ -1,0 +1,795 @@
+[
+  {
+    "id": "TC001",
+    "title": "Dashboard loads current-month overview after successful OTP verification",
+    "description": "Verifies that completing the OTP sign-in flow lands the user on the dashboard and shows current-month summary and chart content.",
+    "category": "Workspace Authentication (Email OTP)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify current-month income, expense, and balance summaries and an income-vs-expense chart are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Dashboard is gated behind OTP login",
+    "description": "Verifies that an unauthenticated user attempting to access the dashboard is prompted to authenticate before the dashboard is accessible.",
+    "category": "Dashboard overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the authentication page to load"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the authentication flow is shown instead of the dashboard overview"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Dashboard is gated behind OTP login for transactions ledger",
+    "description": "Verifies that an unauthenticated user attempting to access the transactions page is prompted to authenticate before the ledger is accessible.",
+    "category": "Dashboard overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard/transactions"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the authentication page to load"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the authentication flow is shown instead of the transactions ledger"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Dashboard shows current-month summary and chart by default",
+    "description": "Verifies that a signed-in user viewing the dashboard sees the default current-month summary cards and analyzer chart.",
+    "category": "Dashboard overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the dashboard to load"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify current-month income, expense, and balance summaries are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an income-vs-expense chart is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Create a transaction and see it appear in the ledger",
+    "description": "Verifies that creating a new transaction with category, type, amount, and date saves successfully and appears in the transaction ledger.",
+    "category": "Transaction Management (create, edit, delete)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation entry to open the transactions ledger"
+      },
+      {
+        "type": "action",
+        "description": "Initiate creating a new transaction"
+      },
+      {
+        "type": "action",
+        "description": "Select a transaction category"
+      },
+      {
+        "type": "action",
+        "description": "Select a transaction type"
+      },
+      {
+        "type": "action",
+        "description": "Fill 123.45 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Save the transaction"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a new transaction row appears in the ledger"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Changing month updates dashboard summaries and chart",
+    "description": "Verifies that switching the dashboard time context to a different month updates the summary cards and chart to reflect that month.",
+    "category": "Dashboard overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Open the month/time-context control"
+      },
+      {
+        "type": "action",
+        "description": "Select a different month"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard summary cards update for the selected month"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard chart updates for the selected month"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Edit a transaction and see updated details and metadata",
+    "description": "Verifies that editing an existing transaction updates its displayed values and shows updated audit metadata.",
+    "category": "Transaction Management (create, edit, delete)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation entry to open the transactions ledger"
+      },
+      {
+        "type": "action",
+        "description": "Initiate creating a new transaction"
+      },
+      {
+        "type": "action",
+        "description": "Select a transaction category"
+      },
+      {
+        "type": "action",
+        "description": "Select a transaction type"
+      },
+      {
+        "type": "action",
+        "description": "Fill 50.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Save the transaction"
+      },
+      {
+        "type": "action",
+        "description": "Open the created transaction for editing"
+      },
+      {
+        "type": "action",
+        "description": "Fill 75.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Select a different transaction category"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the edited transaction row reflects the updated details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updated audit metadata is visible for the transaction"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Delete a transaction with confirmation and see it removed",
+    "description": "Verifies that deleting a transaction after confirming intent removes it from the ledger.",
+    "category": "Transaction Management (create, edit, delete)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation entry to open the transactions ledger"
+      },
+      {
+        "type": "action",
+        "description": "Initiate creating a new transaction"
+      },
+      {
+        "type": "action",
+        "description": "Select a transaction category"
+      },
+      {
+        "type": "action",
+        "description": "Select a transaction type"
+      },
+      {
+        "type": "action",
+        "description": "Fill 20.00 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid date into the date field"
+      },
+      {
+        "type": "action",
+        "description": "Save the transaction"
+      },
+      {
+        "type": "action",
+        "description": "Request to delete the created transaction"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion intent"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the transaction is removed from the ledger"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Navigate from dashboard to transactions ledger",
+    "description": "Verifies that a signed-in user can navigate from the dashboard to the transaction ledger to inspect entries.",
+    "category": "Dashboard overview",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation entry to open the transactions ledger"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the transaction ledger is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC010",
+    "title": "Update report preview when date range changes",
+    "description": "Verifies a user can change the date range on the reports page and the category distribution preview updates accordingly.",
+    "category": "Financial Reporting & Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the request to get a sign-in code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid 6-digit OTP code into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open reports"
+      },
+      {
+        "type": "action",
+        "description": "Select a different valid date range in the report filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the category distribution pie chart reflects the selected date range"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the report summary table reflects the selected date range"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC011",
+    "title": "Drill into a report category and return to main view",
+    "description": "Verifies a user can drill into a category slice to see a subcategory breakdown and then return to the main category chart view.",
+    "category": "Financial Reporting & Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the request to get a sign-in code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid 6-digit OTP code into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open reports"
+      },
+      {
+        "type": "action",
+        "description": "Click a category slice in the pie chart preview"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a subcategory breakdown view is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to return to the main report view"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the main category distribution pie chart view is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC012",
+    "title": "Incorrect or expired OTP shows a retry error",
+    "description": "Verifies that submitting an invalid OTP shows a validation error and keeps the user in the authentication flow.",
+    "category": "Workspace Authentication (Email OTP)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an OTP validation error is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is not signed in and remains in the authentication flow"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC013",
+    "title": "Export the filtered report as PDF",
+    "description": "Verifies a user can export the currently filtered report to PDF and a PDF download is initiated.",
+    "category": "Financial Reporting & Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the request to get a sign-in code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid 6-digit OTP code into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open reports"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid date range in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Initiate export to PDF"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a report export confirmation or progress indicator is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a PDF file download is initiated"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC014",
+    "title": "Export the filtered report as Excel",
+    "description": "Verifies a user can export the currently filtered report to Excel and an Excel download is initiated.",
+    "category": "Financial Reporting & Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the request to get a sign-in code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid 6-digit OTP code into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open reports"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid date range in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Initiate export to Excel"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a report export confirmation or progress indicator is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an Excel file download is initiated"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC015",
+    "title": "Keep filters applied when returning from category drill-down",
+    "description": "Verifies that after drilling into a category and returning to the main view, the previously selected date range remains applied.",
+    "category": "Financial Reporting & Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the request to get a sign-in code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid 6-digit OTP code into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open reports"
+      },
+      {
+        "type": "action",
+        "description": "Select a specific valid date range in the report filters"
+      },
+      {
+        "type": "action",
+        "description": "Click a category slice in the pie chart preview"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to return to the main report view"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the report preview still reflects the previously selected date range"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the report summary table still reflects the previously selected date range"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC016",
+    "title": "Client-side validation blocks invalid transaction creation",
+    "description": "Verifies that leaving required fields blank or entering an invalid amount shows client-side validation errors and prevents saving.",
+    "category": "Transaction Management (create, edit, delete)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Request an OTP"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid 6-digit OTP into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP for verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation entry to open the transactions ledger"
+      },
+      {
+        "type": "action",
+        "description": "Initiate creating a new transaction"
+      },
+      {
+        "type": "action",
+        "description": "Fill -1 into the amount field"
+      },
+      {
+        "type": "action",
+        "description": "Save the transaction"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation errors are visible for the invalid or missing fields"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the transaction is not added to the ledger"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC017",
+    "title": "Handle empty-state reports for a date range with no data",
+    "description": "Verifies selecting a date range with no transactions shows an empty state and does not break the report preview.",
+    "category": "Financial Reporting & Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the request to get a sign-in code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid 6-digit OTP code into the OTP field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open reports"
+      },
+      {
+        "type": "action",
+        "description": "Select a date range far enough in the past or future that is likely to contain no transactions"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible for the report results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page remains usable with filters still interactive"
+      }
+    ],
+    "priority": "Low"
+  }
+]
