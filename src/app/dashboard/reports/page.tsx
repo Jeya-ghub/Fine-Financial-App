@@ -109,7 +109,7 @@ export default function ReportsPage() {
                           <td className="px-6 py-4 text-[10px] font-bold text-white/40">{tx.date}</td>
                           <td className="px-6 py-4 text-[11px] font-black text-white">{tx.description}</td>
                           <td className="px-6 py-4">
-                            <Badge variant="outline" className="h-5 text-[8px] font-black uppercase tracking-widest">
+                            <Badge variant="neutral" className="h-5 text-[8px] font-black uppercase tracking-widest">
                               {tx.categories?.name || 'Uncategorized'}
                             </Badge>
                           </td>
