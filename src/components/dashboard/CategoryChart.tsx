@@ -6,7 +6,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } 
 import { useDashboardContext } from '@/components/providers/DashboardProvider';
 
 interface CategoryChartProps {
-  categories: { name: string; amount: number; percentage: number; color: string }[];
+  categories: { id: string; name: string; amount: number; percentage: number; color: string }[];
 }
 
 export function CategoryChart({ categories }: CategoryChartProps) {
@@ -31,7 +31,7 @@ export function CategoryChart({ categories }: CategoryChartProps) {
                 paddingAngle={4}
                 dataKey="amount"
                 stroke="none"
-                onClick={(data) => setSelectedCategory(data.id)}
+                onClick={(data: any) => setSelectedCategory(data.payload.id)}
                 cursor="pointer"
               >
                 {categories.map((entry, index) => (

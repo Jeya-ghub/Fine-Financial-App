@@ -9,6 +9,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   size?: 'sm' | 'md' | 'lg' | 'icon';
   className?: string;
   isLoading?: boolean;
+  children?: React.ReactNode;
 }
 
 export function Button({ 

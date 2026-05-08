@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
-import { DashboardData } from '@/types/dashboard.types'
+import { DashboardData, Insight } from '@/types/dashboard.types'
 import { unstable_cache } from 'next/cache'
 
 export async function fetchDashboardData(workspaceId: string, monthLabel: string, categoryId: string | null): Promise<DashboardData> {
@@ -113,7 +113,14 @@ export async function fetchDashboardData(workspaceId: string, monthLabel: string
       return {
         net, income, expense, trend: 0,
         chartData, categories,
-        insights: [{ id: '1', type: 'info', text: `Total Expenses: ₹${expense}`, subtext: `Based on ${transactions.length} transactions.` }],
+        insights: [
+          { 
+            id: '1', 
+            type: 'info' as const, 
+            text: `Total Expenses: ₹${expense}`, 
+            subtext: `Based on ${transactions.length} transactions.` 
+          }
+        ],
         transactions
       }
     },

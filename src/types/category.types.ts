@@ -6,6 +6,7 @@ export interface Subcategory {
   category_id: string
   workspace_id: string
   created_at: string
+  is_default?: boolean
 }
 
 export interface Category {
@@ -16,6 +17,8 @@ export interface Category {
   created_by: string
   created_at: string
   updated_at: string
+  icon?: string
+  is_default?: boolean
   subcategories?: Subcategory[]
 }
 

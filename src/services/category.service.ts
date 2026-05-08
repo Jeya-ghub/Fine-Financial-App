@@ -6,7 +6,7 @@ export const categoryService = {
     const supabase = createClient()
     const { data, error } = await supabase
       .from('categories')
-      .select('id, name, type, icon, is_default, subcategories(id, name, is_default)')
+      .select('id, name, type, icon, is_default, workspace_id, created_by, created_at, updated_at, subcategories(id, name, category_id, workspace_id, created_at, is_default)')
       .eq('workspace_id', workspaceId)
       .eq('is_archived', false)
       .order('name')
