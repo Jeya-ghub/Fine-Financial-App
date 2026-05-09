@@ -26,7 +26,16 @@ export default async function DashboardLayout({
   }
 
   if (!workspaces || workspaces.length === 0) {
-    return <>{children}</>
+    // This should ideally not happen after the onboarding fix, 
+    // but we'll show a fallback or redirect to a creation page if it does.
+    return (
+      <div className="flex h-screen bg-[#0a0a0a] items-center justify-center text-white">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">No Workspace Found</h1>
+          <p className="text-zinc-500">Please contact support or try logging in again.</p>
+        </div>
+      </div>
+    )
   }
 
   const activeWorkspace = workspaces.find(w => w.id === activeIdCookie) || workspaces[0]

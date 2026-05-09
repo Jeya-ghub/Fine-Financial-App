@@ -363,9 +363,11 @@ export default function AuthPage() {
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl"
+            className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl overflow-hidden"
           >
-            <p className="text-red-400 text-sm text-center font-medium">{error}</p>
+            <p className="text-red-400 text-xs text-center font-bold leading-relaxed break-words whitespace-pre-wrap">
+              {error}
+            </p>
           </motion.div>
         )}
       </motion.div>

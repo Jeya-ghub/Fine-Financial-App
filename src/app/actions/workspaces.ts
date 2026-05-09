@@ -18,6 +18,7 @@ export async function createWorkspace(name: string, type: 'private' | 'shared' =
   }
 
   // 1. Create Workspace
+  console.log(`[Workspace] Creating workspace "${name}" for user ${user.id}...`)
   const { data: workspace, error: workspaceError } = await supabase
     .from('workspaces')
     .insert([{ 
@@ -236,8 +237,9 @@ export async function createInvite(workspaceId: string, emailString: string) {
         </div>
       `,
     })
-  } catch (err) {
+  } catch (err: any) {
     console.error('Invite Email Error:', err)
+    return { error: err.message || 'Failed to send invitation email.' }
   }
 
   revalidatePath('/dashboard/workspace', 'layout')
@@ -275,8 +277,8 @@ export async function sendInviteOtp(token: string) {
       `,
     })
     return { success: true }
-  } catch (err) {
-    return { error: 'Failed to send OTP.' }
+  } catch (err: any) {
+    return { error: err.message || 'Failed to send OTP.' }
   }
 }
 
@@ -466,8 +468,8 @@ export async function requestOwnershipTransfer(workspaceId: string, newOwnerId: 
       `,
     })
     return { success: true }
-  } catch (err) {
-    return { error: 'Failed to send security code.' }
+  } catch (err: any) {
+    return { error: err.message || 'Failed to send security code.' }
   }
 }
 

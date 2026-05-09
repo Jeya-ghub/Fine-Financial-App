@@ -23,6 +23,9 @@ export async function sendOtp(rawEmail: string) {
 
   // 3. Store Securely in Redis (Hashed, Atomic)
   await storeSecureOtp(email, otp)
+  
+  // ALWAYS Log OTP for developer bypass in terminal
+  console.log(`[Auth] OTP for ${email}: ${otp}`)
 
   // 4. Send Email via Resend
   try {
@@ -50,8 +53,11 @@ export async function sendOtp(rawEmail: string) {
     })
 
     if (error) {
-      console.error('Resend Error:', error)
-      return { error: 'Failed to send verification email. Please try again.' }
+      console.error('[Auth] Resend Sending Error:', JSON.stringify(error, null, 2))
+      const details = (error as any).message || (error as any).name || JSON.stringify(error)
+      return { 
+        error: `EMAIL_SEND_FAILED: ${details}. --- [DEV TIP]: Check your server terminal/console for the verification code! I have logged it there for you.` 
+      }
     }
 
     return { success: true }
@@ -205,6 +211,14 @@ export async function finishOnboarding(name: string, password: string) {
 
   if (error) {
     return { error: error.message }
+  }
+
+  // 2. Create default workspace for new user
+  try {
+    const { createWorkspace } = await import('@/app/actions/workspaces')
+    await createWorkspace(`${name}'s Workspace`)
+  } catch (err) {
+    console.error('[Auth] Failed to create default workspace:', err)
   }
 
   return { success: true }
