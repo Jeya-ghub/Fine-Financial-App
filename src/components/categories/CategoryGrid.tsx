@@ -1,4 +1,4 @@
-import { motion, Reorder } from 'framer-motion'
+import { motion, Reorder, useDragControls } from 'framer-motion'
 import { Category } from '@/types/category.types'
 import { CategoryCard } from './CategoryCard'
 
@@ -32,19 +32,40 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
             onReorder={(newOrder) => handleReorder('income', newOrder)}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
-            {incomeCategories.map(cat => (
-              <Reorder.Item 
-                key={cat.id} 
-                value={cat}
-                className="relative"
-              >
-                <CategoryCard 
-                  category={cat} 
-                  onEdit={onEdit} 
-                  onDelete={onDelete} 
-                />
-              </Reorder.Item>
-            ))}
+            {incomeCategories.map(cat => {
+              const controls = useDragControls()
+              return (
+                <Reorder.Item 
+                  key={cat.id} 
+                  value={cat}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  dragControls={controls}
+                  dragListener={false}
+                  whileDrag={{ 
+                    scale: 1.02,
+                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+                    zIndex: 50
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 50,
+                    mass: 1
+                  }}
+                  className="relative"
+                >
+                  <CategoryCard 
+                    category={cat} 
+                    onEdit={onEdit} 
+                    onDelete={onDelete} 
+                    dragControls={controls}
+                  />
+                </Reorder.Item>
+              )
+            })}
           </Reorder.Group>
         </div>
       )}
@@ -61,19 +82,40 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
             onReorder={(newOrder) => handleReorder('expense', newOrder)}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
-            {expenseCategories.map(cat => (
-              <Reorder.Item 
-                key={cat.id} 
-                value={cat}
-                className="relative"
-              >
-                <CategoryCard 
-                  category={cat} 
-                  onEdit={onEdit} 
-                  onDelete={onDelete} 
-                />
-              </Reorder.Item>
-            ))}
+            {expenseCategories.map(cat => {
+              const controls = useDragControls()
+              return (
+                <Reorder.Item 
+                  key={cat.id} 
+                  value={cat}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  dragControls={controls}
+                  dragListener={false}
+                  whileDrag={{ 
+                    scale: 1.02,
+                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+                    zIndex: 50
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 50,
+                    mass: 1
+                  }}
+                  className="relative"
+                >
+                  <CategoryCard 
+                    category={cat} 
+                    onEdit={onEdit} 
+                    onDelete={onDelete} 
+                    dragControls={controls}
+                  />
+                </Reorder.Item>
+              )
+            })}
           </Reorder.Group>
         </div>
       )}
