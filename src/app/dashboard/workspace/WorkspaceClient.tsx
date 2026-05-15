@@ -279,6 +279,8 @@ export default function WorkspaceClient({
             </motion.div>
           </motion.div>
         )}
+      </AnimatePresence>
+
       {/* ── Rename Workspace Modal ── */}
       <AnimatePresence>
         {isRenameModalOpen && (
