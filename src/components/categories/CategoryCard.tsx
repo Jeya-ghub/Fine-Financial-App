@@ -41,7 +41,7 @@ export function CategoryCard({ category, onEdit, onDelete, dragControls }: Categ
               <h3 className="text-sm font-black text-primary uppercase tracking-tight leading-tight truncate">
                 {category.name}
               </h3>
-              <Badge variant="outline" className="text-[7px] font-black uppercase tracking-widest px-1 py-0 border-muted/20 text-muted">
+              <Badge variant="neutral" className="text-[7px] font-black uppercase tracking-widest px-1 py-0 border-muted/20 text-muted">
                 {category.type}
               </Badge>
             </div>
