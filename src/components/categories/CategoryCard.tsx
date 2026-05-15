@@ -29,11 +29,7 @@ export function CategoryCard({ category, onEdit, onDelete, dragControls }: Categ
           </div>
           
           <div className="w-10 h-10 rounded-xl bg-surface-hover flex items-center justify-center shrink-0">
-            {isIncome ? (
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
-            ) : (
-              <TrendingDown className="w-5 h-5 text-rose-500" />
-            )}
+            <Tag className={`w-4 h-4 ${isIncome ? 'text-emerald-500' : 'text-rose-500'}`} />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -41,9 +37,9 @@ export function CategoryCard({ category, onEdit, onDelete, dragControls }: Categ
               <h3 className="text-sm font-black text-primary uppercase tracking-tight leading-tight truncate">
                 {category.name}
               </h3>
-              <Badge variant="neutral" className="text-[7px] font-black uppercase tracking-widest px-1 py-0 border-muted/20 text-muted">
+              <span className="text-[7px] font-black uppercase tracking-widest px-1 text-muted/40">
                 {category.type}
-              </Badge>
+              </span>
             </div>
             <div className="mt-1">
               <SubcategoryChips subcategories={category.subcategories || []} />
