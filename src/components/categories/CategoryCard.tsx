@@ -23,9 +23,10 @@ export function CategoryCard({ category, onEdit, onDelete, dragControls }: Categ
         <div className="flex items-center gap-4 flex-1">
           <div 
             onPointerDown={(e) => dragControls.start(e)}
-            className="cursor-grab active:cursor-grabbing text-muted/20 hover:text-primary/40 transition-colors p-1"
+            className="cursor-grab active:cursor-grabbing text-muted/20 hover:text-primary/60 transition-all p-2 -ml-2 hover:bg-surface-hover rounded-lg"
+            title="Drag to reorder"
           >
-            <GripVertical className="w-4 h-4" />
+            <GripVertical className="w-5 h-5" />
           </div>
           
           <div className="w-10 h-10 rounded-xl bg-surface-hover flex items-center justify-center shrink-0">

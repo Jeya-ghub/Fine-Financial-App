@@ -63,7 +63,7 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
   }
 
   return (
-    <div className="space-y-12 max-w-2xl mx-auto">
+    <div className="space-y-12 max-w-2xl">
       {incomeCategories.length > 0 && (
         <div>
           <h2 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">

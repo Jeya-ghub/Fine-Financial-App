@@ -48,7 +48,7 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm, category, isLoa
                 <Button 
                   variant="ghost" 
                   onClick={onClose}
-                  className="h-12 text-[10px]"
+                  className="h-12 text-[10px] text-white/60 hover:text-white hover:bg-white/5"
                   disabled={isLoading}
                 >
                   Cancel
