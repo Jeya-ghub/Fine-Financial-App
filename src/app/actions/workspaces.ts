@@ -8,7 +8,7 @@ import { mailer } from '@/lib/mailer'
 import { randomInt } from 'node:crypto'
 import { getWorkspaceAccess, WorkspaceRole } from '@/lib/auth/permissions'
 
-export async function createWorkspace(name: string, type: 'private' | 'shared' = 'shared') {
+export async function createWorkspace(name: string = 'Private Workspace', type: 'private' | 'shared' = 'shared') {
   const supabase = await createClient()
 
   // Get current user
@@ -130,6 +130,35 @@ export async function getWorkspaces() {
   }
 
   return { success: true, data }
+}
+
+export async function renameWorkspace(workspaceId: string, newName: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  // Verify ownership
+  const { data: member, error: memberError } = await supabase
+    .from('workspace_members')
+    .select('role')
+    .eq('workspace_id', workspaceId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (memberError || member?.role !== 'owner') {
+    return { error: 'Only the workspace owner can rename it.' }
+  }
+
+  const { error } = await supabase
+    .from('workspaces')
+    .update({ name: newName })
+    .eq('id', workspaceId)
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/dashboard/workspace', 'layout')
+  revalidatePath('/dashboard', 'layout')
+  return { success: true }
 }
 
 export async function setActiveWorkspace(workspaceId: string) {

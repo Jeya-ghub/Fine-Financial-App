@@ -7,8 +7,9 @@ import {
   Plus, CheckCircle2, X, Send, Loader2, Info, Trash2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { setActiveWorkspace, createWorkspace } from '@/app/actions/workspaces'
+import { setActiveWorkspace, createWorkspace, renameWorkspace } from '@/app/actions/workspaces'
 import { useRouter } from 'next/navigation'
+import { Edit2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function WorkspaceClient({ 
@@ -29,6 +30,9 @@ export default function WorkspaceClient({
   const [newWorkspaceName, setNewWorkspaceName] = useState('')
   const [newWorkspaceType, setNewWorkspaceType] = useState<'private' | 'shared'>('shared')
   const [loading, setLoading] = useState(false)
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
+  const [renamingWorkspace, setRenamingWorkspace] = useState<any>(null)
+  const [renameValue, setRenameValue] = useState('')
 
   const handleSwitch = async (id: string) => {
     setLoading(true)
@@ -39,14 +43,31 @@ export default function WorkspaceClient({
 
   const handleCreateWorkspace = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newWorkspaceName.trim()) return
+    // No explicit name check here as createWorkspace has a default, 
+    // but we'll trim and use the name if provided.
     setLoading(true)
-    const res = await createWorkspace(newWorkspaceName, newWorkspaceType)
-    setLoading(false)
+    const res = await createWorkspace(newWorkspaceName || 'Private Workspace', newWorkspaceType)
+    setLoading(true)
     if (res.success) {
       setIsCreateModalOpen(false)
       setNewWorkspaceName('')
       setNewWorkspaceType('shared')
+      router.refresh()
+    } else {
+      alert(res.error)
+    }
+  }
+
+  const handleRenameWorkspace = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!renameValue.trim() || !renamingWorkspace) return
+    setLoading(true)
+    const res = await renameWorkspace(renamingWorkspace.id, renameValue.trim())
+    setLoading(false)
+    if (res.success) {
+      setIsRenameModalOpen(false)
+      setRenamingWorkspace(null)
+      setRenameValue('')
       router.refresh()
     } else {
       alert(res.error)
@@ -156,6 +177,21 @@ export default function WorkspaceClient({
                           Current Focus
                         </span>
                       )}
+                      {role === 'owner' && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setRenamingWorkspace(w);
+                            setRenameValue(w.name);
+                            setIsRenameModalOpen(true);
+                          }}
+                          className="p-1.5 rounded-xl bg-surface-hover border border-surface-border text-muted hover:text-primary transition-all relative z-20 shadow-sm"
+                          title="Rename Workspace"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -237,6 +273,58 @@ export default function WorkspaceClient({
                     className="h-[64px] bg-primary text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated"
                   >
                     {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      {/* ── Rename Workspace Modal ── */}
+      <AnimatePresence>
+        {isRenameModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+              className="w-full max-w-md bg-surface border border-surface-border rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+              
+              <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-8 border border-primary/20 mx-auto shadow-sm">
+                <Edit2 className="w-10 h-10 text-primary" />
+              </div>
+              
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Rename Workspace</h2>
+              <p className="text-[13px] text-muted text-center mb-10 leading-relaxed max-w-[280px] mx-auto font-medium">
+                Update the designation of your environment.
+              </p>
+              
+              <form onSubmit={handleRenameWorkspace} className="space-y-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">New Designation</label>
+                  <input 
+                    type="text" 
+                    value={renameValue} 
+                    onChange={(e) => setRenameValue(e.target.value)} 
+                    placeholder="e.g. My Private Workspace" 
+                    className="w-full h-[64px] bg-surface-hover/50 border border-surface-border rounded-2xl px-6 text-base font-bold text-center text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm" 
+                    required
+                    maxLength={30}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 pt-6">
+                  <button type="button" onClick={() => { setIsRenameModalOpen(false); setRenameValue(''); setRenamingWorkspace(null); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover border border-transparent hover:border-surface-border">
+                    Abort
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={loading || !renameValue.trim()}
+                    className="h-[64px] bg-primary text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated"
+                  >
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Apply'}
                   </button>
                 </div>
               </form>
