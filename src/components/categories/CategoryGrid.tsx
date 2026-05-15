@@ -30,7 +30,7 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
             axis="y" 
             values={incomeCategories} 
             onReorder={(newOrder) => handleReorder('income', newOrder)}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            className="space-y-3"
           >
             {incomeCategories.map(cat => {
               const controls = useDragControls()
@@ -39,21 +39,20 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
                   key={cat.id} 
                   value={cat}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
                   dragControls={controls}
                   dragListener={false}
                   whileDrag={{ 
-                    scale: 1.02,
+                    scale: 1.01,
                     boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
                     zIndex: 50
                   }}
                   transition={{
                     type: "spring",
-                    stiffness: 500,
-                    damping: 50,
-                    mass: 1
+                    stiffness: 600,
+                    damping: 40
                   }}
                   className="relative"
                 >
@@ -80,7 +79,7 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
             axis="y" 
             values={expenseCategories} 
             onReorder={(newOrder) => handleReorder('expense', newOrder)}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            className="space-y-3"
           >
             {expenseCategories.map(cat => {
               const controls = useDragControls()
@@ -89,21 +88,20 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
                   key={cat.id} 
                   value={cat}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
                   dragControls={controls}
                   dragListener={false}
                   whileDrag={{ 
-                    scale: 1.02,
+                    scale: 1.01,
                     boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
                     zIndex: 50
                   }}
                   transition={{
                     type: "spring",
-                    stiffness: 500,
-                    damping: 50,
-                    mass: 1
+                    stiffness: 600,
+                    damping: 40
                   }}
                   className="relative"
                 >

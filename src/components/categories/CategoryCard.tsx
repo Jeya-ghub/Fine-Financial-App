@@ -18,45 +18,57 @@ export function CategoryCard({ category, onEdit, onDelete, dragControls }: Categ
   const isIncome = category.type === 'income'
 
   return (
-    <Card className="group relative overflow-hidden h-full min-h-[140px]">
-      <CardContent className="p-5 flex flex-col h-full">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-3">
-            <div 
-              onPointerDown={(e) => dragControls.start(e)}
-              className="mt-1 cursor-grab active:cursor-grabbing text-muted/20 hover:text-primary/40 transition-colors"
-            >
-              <GripVertical className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-sm font-black text-primary uppercase tracking-tight leading-tight">{category.name}</h3>
-              <span className="mt-1 text-[8px] font-black text-muted uppercase tracking-widest block">
-                {category.type}
-              </span>
-            </div>
+    <Card className="group relative overflow-hidden h-full">
+      <CardContent className="p-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1">
+          <div 
+            onPointerDown={(e) => dragControls.start(e)}
+            className="cursor-grab active:cursor-grabbing text-muted/20 hover:text-primary/40 transition-colors p-1"
+          >
+            <GripVertical className="w-4 h-4" />
+          </div>
+          
+          <div className="w-10 h-10 rounded-xl bg-surface-hover flex items-center justify-center shrink-0">
+            {isIncome ? (
+              <TrendingUp className="w-5 h-5 text-emerald-500" />
+            ) : (
+              <TrendingDown className="w-5 h-5 text-rose-500" />
+            )}
           </div>
 
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => onEdit(category)}
-              className="w-8 h-8 rounded-lg hover:bg-surface-hover"
-            >
-              <Edit2 className="w-3.5 h-3.5 text-muted hover:text-primary" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => onDelete(category)}
-              className="w-8 h-8 rounded-lg hover:bg-rose-500/10 hover:text-rose-500"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-black text-primary uppercase tracking-tight leading-tight truncate">
+                {category.name}
+              </h3>
+              <Badge variant="outline" className="text-[7px] font-black uppercase tracking-widest px-1 py-0 border-muted/20 text-muted">
+                {category.type}
+              </Badge>
+            </div>
+            <div className="mt-1">
+              <SubcategoryChips subcategories={category.subcategories || []} />
+            </div>
           </div>
         </div>
 
-        <SubcategoryChips subcategories={category.subcategories || []} />
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onEdit(category)}
+            className="w-8 h-8 rounded-lg hover:bg-surface-hover"
+          >
+            <Edit2 className="w-3.5 h-3.5 text-muted hover:text-primary" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onDelete(category)}
+            className="w-8 h-8 rounded-lg hover:bg-rose-500/10 hover:text-rose-500"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   )
