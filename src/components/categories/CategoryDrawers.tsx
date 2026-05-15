@@ -91,28 +91,28 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
             {/* Form */}
             <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-8 pt-0 space-y-8 custom-scrollbar">
               {/* Type Toggle */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <label className="text-[10px] font-black text-muted uppercase tracking-widest px-1">Category Type</label>
-                <div className="grid grid-cols-2 gap-2 bg-surface-hover/30 p-1 rounded-2xl border border-surface-border">
+                <div className="flex items-center gap-8 px-1">
                   <button
                     type="button"
                     onClick={() => setType('expense')}
-                    className={`flex items-center justify-center gap-2 h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                      type === 'expense' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-muted hover:text-primary'
+                    className={`group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                      type === 'expense' ? 'text-rose-500' : 'text-muted/40 hover:text-muted'
                     }`}
                   >
-                    <TrendingDown className="w-3.5 h-3.5" />
                     Expense
+                    {type === 'expense' && <motion.div layoutId="type-dot" className="w-1 h-1 rounded-full bg-rose-500" />}
                   </button>
                   <button
                     type="button"
                     onClick={() => setType('income')}
-                    className={`flex items-center justify-center gap-2 h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                      type === 'income' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-muted hover:text-primary'
+                    className={`group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                      type === 'income' ? 'text-emerald-500' : 'text-muted/40 hover:text-muted'
                     }`}
                   >
-                    <TrendingUp className="w-3.5 h-3.5" />
                     Income
+                    {type === 'income' && <motion.div layoutId="type-dot" className="w-1 h-1 rounded-full bg-emerald-500" />}
                   </button>
                 </div>
               </div>

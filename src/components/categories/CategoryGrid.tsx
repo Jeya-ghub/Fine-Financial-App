@@ -22,9 +22,9 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
     <div className="space-y-12">
       {incomeCategories.length > 0 && (
         <div>
-          <h2 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-            Income Categories
-            <div className="flex-1 h-px bg-emerald-500/10" />
+          <h2 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+            Inflow Streams
+            <span className="text-muted/40 font-bold ml-1">{incomeCategories.length}</span>
           </h2>
           <Reorder.Group 
             axis="y" 
@@ -71,9 +71,9 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
 
       {expenseCategories.length > 0 && (
         <div>
-          <h2 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-            Expense Categories
-            <div className="flex-1 h-px bg-rose-500/10" />
+          <h2 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+            Outflow Targets
+            <span className="text-muted/40 font-bold ml-1">{expenseCategories.length}</span>
           </h2>
           <Reorder.Group 
             axis="y" 
