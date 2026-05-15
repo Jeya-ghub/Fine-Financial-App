@@ -9,6 +9,50 @@ interface CategoryGridProps {
   onReorder: (newOrder: Category[]) => void
 }
 
+function CategoryItem({ 
+  cat, 
+  onEdit, 
+  onDelete 
+}: { 
+  cat: Category; 
+  onEdit: (c: Category) => void; 
+  onDelete: (c: Category) => void;
+}) {
+  const controls = useDragControls()
+  
+  return (
+    <Reorder.Item 
+      key={cat.id} 
+      value={cat}
+      layout
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      dragControls={controls}
+      dragListener={false}
+      whileDrag={{ 
+        scale: 1.01,
+        boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+        zIndex: 50,
+        cursor: 'grabbing'
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 600,
+        damping: 40
+      }}
+      className="relative"
+    >
+      <CategoryCard 
+        category={cat} 
+        onEdit={onEdit} 
+        onDelete={onDelete} 
+        dragControls={controls}
+      />
+    </Reorder.Item>
+  )
+}
+
 export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: CategoryGridProps) {
   const incomeCategories = categories.filter(c => c.type === 'income')
   const expenseCategories = categories.filter(c => c.type === 'expense')
@@ -32,40 +76,14 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
             onReorder={(newOrder) => handleReorder('income', newOrder)}
             className="space-y-3"
           >
-            {incomeCategories.map(cat => {
-              const controls = useDragControls()
-              return (
-                <Reorder.Item 
-                  key={cat.id} 
-                  value={cat}
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  dragControls={controls}
-                  dragListener={false}
-                  whileDrag={{ 
-                    scale: 1.01,
-                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
-                    zIndex: 50,
-                    cursor: 'grabbing'
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 600,
-                    damping: 40
-                  }}
-                  className="relative"
-                >
-                  <CategoryCard 
-                    category={cat} 
-                    onEdit={onEdit} 
-                    onDelete={onDelete} 
-                    dragControls={controls}
-                  />
-                </Reorder.Item>
-              )
-            })}
+            {incomeCategories.map(cat => (
+              <CategoryItem 
+                key={cat.id} 
+                cat={cat} 
+                onEdit={onEdit} 
+                onDelete={onDelete} 
+              />
+            ))}
           </Reorder.Group>
         </div>
       )}
@@ -82,40 +100,14 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
             onReorder={(newOrder) => handleReorder('expense', newOrder)}
             className="space-y-3"
           >
-            {expenseCategories.map(cat => {
-              const controls = useDragControls()
-              return (
-                <Reorder.Item 
-                  key={cat.id} 
-                  value={cat}
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  dragControls={controls}
-                  dragListener={false}
-                  whileDrag={{ 
-                    scale: 1.01,
-                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
-                    zIndex: 50,
-                    cursor: 'grabbing'
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 600,
-                    damping: 40
-                  }}
-                  className="relative"
-                >
-                  <CategoryCard 
-                    category={cat} 
-                    onEdit={onEdit} 
-                    onDelete={onDelete} 
-                    dragControls={controls}
-                  />
-                </Reorder.Item>
-              )
-            })}
+            {expenseCategories.map(cat => (
+              <CategoryItem 
+                key={cat.id} 
+                cat={cat} 
+                onEdit={onEdit} 
+                onDelete={onDelete} 
+              />
+            ))}
           </Reorder.Group>
         </div>
       )}
