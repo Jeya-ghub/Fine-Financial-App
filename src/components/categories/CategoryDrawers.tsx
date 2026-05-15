@@ -45,10 +45,18 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
+
+    // Auto-add pending subcategory if present
+    const finalSubcategories = [...subcategories]
+    const trimmedSub = subInput.trim()
+    if (trimmedSub && !finalSubcategories.includes(trimmedSub)) {
+      finalSubcategories.push(trimmedSub)
+    }
+
     await onSave({
       name: name.trim(),
       type,
-      subcategories: subcategories
+      subcategories: finalSubcategories
     })
   }
 
