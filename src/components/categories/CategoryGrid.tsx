@@ -67,7 +67,7 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
       {incomeCategories.length > 0 && (
         <div>
           <h2 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-            Inflow Streams
+            Income Category
             <span className="text-muted/40 font-bold ml-1">{incomeCategories.length}</span>
           </h2>
           <Reorder.Group 
@@ -91,7 +91,7 @@ export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: Catego
       {expenseCategories.length > 0 && (
         <div>
           <h2 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-            Outflow Targets
+            Expense Category
             <span className="text-muted/40 font-bold ml-1">{expenseCategories.length}</span>
           </h2>
           <Reorder.Group 
