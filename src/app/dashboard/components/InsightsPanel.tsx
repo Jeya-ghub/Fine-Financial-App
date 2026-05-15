@@ -12,9 +12,9 @@ const IconMap = {
 }
 
 const ColorMap = {
-  positive: 'bg-emerald-500/10 text-emerald-500',
-  warning: 'bg-amber-500/10 text-amber-500',
-  info: 'bg-blue-500/10 text-blue-500'
+  positive: 'bg-accent-emerald/10 text-accent-emerald',
+  warning: 'bg-accent-amber/10 text-accent-amber',
+  info: 'bg-accent-blue/10 text-accent-blue'
 }
 
 export function InsightsPanel({ insights }: { insights: Insight[] }) {
@@ -22,11 +22,13 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bento-card p-5 md:p-6 h-full"
+      className="bento-card p-6 h-full shadow-premium hover:shadow-elevated"
     >
-      <div className="flex items-center gap-2 mb-5">
-        <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.2em]">Insights</h3>
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-8 h-8 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20">
+          <Sparkles className="w-4 h-4 text-accent-blue" />
+        </div>
+        <h3 className="text-[11px] font-black text-primary uppercase tracking-[0.25em]">Smart Insights</h3>
       </div>
 
       <div className="flex flex-col gap-2.5">
@@ -38,18 +40,18 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all cursor-pointer group"
+              className="flex items-center justify-between p-3 rounded-xl bg-surface border border-surface-border hover:bg-surface-hover hover:border-surface-border-hover transition-all cursor-pointer group shadow-sm hover:shadow-premium"
             >
-              <div className="flex items-center gap-3.5">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shadow-lg", ColorMap[insight.type])}>
-                  <Icon className="w-5 h-5" />
+              <div className="flex items-center gap-4">
+                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shadow-md", ColorMap[insight.type])}>
+                  <Icon className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-black text-white tracking-tight mb-0.5 leading-none">{insight.text}</h4>
-                  <p className="text-[10px] font-bold text-zinc-700 tracking-tight">{insight.subtext}</p>
+                  <h4 className="text-sm font-black text-primary tracking-tight mb-1 leading-none">{insight.text}</h4>
+                  <p className="text-xs font-bold text-muted tracking-tight leading-none">{insight.subtext}</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-zinc-800 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+              <ChevronRight className="w-5 h-5 text-muted group-hover:text-primary transition-all transform group-hover:translate-x-1" />
             </motion.div>
           )
         })}

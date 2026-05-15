@@ -28,12 +28,14 @@ export interface BudgetStatus {
   isOver: boolean
 }
 
+import { Transaction } from './transaction.types'
+
 export interface ReportData {
   summary: ReportSummary
   chartData: ChartDataPoint[]
   categories: CategoryDistribution[]
   budgets: BudgetStatus[]
-  transactions: any[]
+  transactions: Transaction[]
 }
 
 export interface ReportFilters {

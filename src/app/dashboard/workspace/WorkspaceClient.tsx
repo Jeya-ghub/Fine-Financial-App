@@ -55,26 +55,26 @@ export default function WorkspaceClient({
 
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0a]">
+    <div className="flex flex-col h-full bg-background">
       {/* ── Top Action Bar ── */}
-      <div className="sticky top-0 z-30 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-surface-border px-4 md:px-8 py-6 flex items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="p-2.5 bg-white/5 rounded-xl border border-white/10">
-            <FolderTree className="w-5 h-5 text-emerald-500" />
+          <div className="p-3 bg-accent-blue/10 rounded-2xl border border-accent-blue/20">
+            <FolderTree className="w-6 h-6 text-accent-blue" />
           </div>
           <div>
-            <h1 className="text-lg font-black text-white uppercase tracking-tight">Workspace Hub</h1>
-            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Multi-Tenant Control</p>
+            <h1 className="text-xl font-black text-primary uppercase tracking-tight leading-tight">Workspace Hub</h1>
+            <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-1">Multi-Tenant Control Center</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsCreateModalOpen(true)} 
-            className="h-[44px] px-6 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest rounded-xl text-[10px] hover:bg-white/10 transition-all flex items-center gap-2"
+            className="h-[48px] px-8 bg-primary text-background font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-elevated"
           >
-            <Plus className="w-4 h-4 text-emerald-500" />
-            <span className="hidden md:inline">New Workspace</span>
+            <Plus className="w-5 h-5" />
+            <span className="hidden md:inline">Initialize Workspace</span>
           </button>
         </div>
       </div>
@@ -83,8 +83,11 @@ export default function WorkspaceClient({
         
         {/* ── Bento Grid: Workspaces ── */}
         <div>
-          <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4">Your Workspaces</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex items-center gap-4 mb-8">
+            <h3 className="text-[11px] font-black text-muted uppercase tracking-[0.3em]">Managed Environments</h3>
+            <div className="h-px flex-1 bg-surface-border" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workspaces.map(w => {
               const isActive = w.id === activeWorkspace.id
               const role = w.workspace_members.find((m:any) => m.email === userEmail)?.role || 'member'
@@ -94,56 +97,66 @@ export default function WorkspaceClient({
                 <div 
                   key={w.id}
                   className={cn(
-                    "p-6 rounded-[2rem] border transition-all group relative overflow-hidden",
+                    "p-8 rounded-[2.5rem] border transition-all group relative overflow-hidden flex flex-col gap-8 shadow-premium hover:shadow-elevated hover:-translate-y-1",
                     isActive 
-                      ? "bg-gradient-to-br from-[#141414] to-emerald-900/20 border-emerald-500/20 shadow-2xl" 
-                      : "bg-[#141414] border-white/5 hover:bg-white/[0.04]"
+                      ? "bg-surface border-primary/20 ring-4 ring-primary/5" 
+                      : "bg-surface border-surface-border hover:border-surface-border-hover"
                   )}
                 >
                   <Link 
                     href={`/dashboard/workspace/${w.id}`}
                     onClick={(e) => {
-                      if (isActive) {
-                        // If already active, just go to management
-                        return;
-                      }
+                      if (isActive) return;
                       e.preventDefault();
                       handleSwitch(w.id);
                     }}
                     className="absolute inset-0 z-10"
                   />
-                  <div className="flex justify-between items-start mb-6 relative z-0">
+                  
+                  <div className="flex justify-between items-start relative z-0">
                     <div className={cn(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl",
-                      isActive ? "bg-emerald-500/10 text-emerald-500" : "bg-white/5 text-zinc-400 group-hover:text-white transition-colors"
+                      "w-16 h-16 rounded-[1.5rem] flex items-center justify-center font-black text-2xl shadow-sm border transition-all group-hover:scale-110",
+                      isActive 
+                        ? "bg-primary text-background border-primary" 
+                        : "bg-surface-hover text-muted border-surface-border"
                     )}>
-                      {w.name.charAt(0)}
+                      {w.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="flex gap-2">
-                      <div className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <Users className="w-3 h-3" /> {memberCount}
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="px-4 py-1.5 bg-surface-hover border border-surface-border rounded-xl text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                        <Users className="w-3.5 h-3.5 text-muted" /> {memberCount}
                       </div>
                       <div className={cn(
-                        "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5",
-                        role === 'owner' ? "bg-blue-500/10 text-blue-500" : "bg-zinc-800 text-zinc-400"
+                        "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm",
+                        role === 'owner' 
+                          ? "bg-accent-blue/10 text-accent-blue border-accent-blue/20" 
+                          : "bg-surface-hover text-muted border-surface-border"
                       )}>
-                        {role === 'owner' ? <Shield className="w-3 h-3" /> : <Key className="w-3 h-3" />}
+                        {role === 'owner' ? <Shield className="w-3.5 h-3.5" /> : <Key className="w-3.5 h-3.5" />}
                         {role}
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <h4 className={cn("text-xl font-black tracking-tight mb-2", isActive ? "text-white" : "text-zinc-300 group-hover:text-white transition-colors")}>
+
+                  <div className="relative z-0">
+                    <h4 className={cn("text-2xl font-black tracking-tight mb-3 transition-colors", isActive ? "text-primary" : "text-primary/80 group-hover:text-primary")}>
                       {w.name}
                     </h4>
-                    <span className={cn(
-                      "text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md border",
-                      w.type === 'private'
-                        ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
-                        : "bg-blue-500/10 text-blue-500 border-blue-500/20"
-                    )}>
-                      {w.type === 'private' ? 'Private' : 'Shared'}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl border shadow-sm",
+                        w.type === 'private'
+                          ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20" 
+                          : "bg-accent-blue/10 text-accent-blue border-accent-blue/20"
+                      )}>
+                        {w.type === 'private' ? 'Confidential' : 'Collaborative'}
+                      </span>
+                      {isActive && (
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                          Current Focus
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               )
@@ -157,64 +170,73 @@ export default function WorkspaceClient({
         {isCreateModalOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-[#0d0d0d] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl"
+              className="w-full max-w-md bg-surface border border-surface-border rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
             >
-              <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 mx-auto">
-                <FolderTree className="w-6 h-6 text-emerald-500" />
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-accent-blue via-primary to-accent-emerald" />
+              
+              <div className="w-20 h-20 bg-accent-blue/10 rounded-[2rem] flex items-center justify-center mb-8 border border-accent-blue/20 mx-auto shadow-sm">
+                <FolderTree className="w-10 h-10 text-accent-blue" />
               </div>
-              <h2 className="text-xl font-black text-white text-center uppercase tracking-tight mb-2">Create Shared Workspace</h2>
-              <p className="text-xs text-zinc-500 text-center mb-8 leading-relaxed">
-                Set up a new isolated environment to collaborate with others.
+              
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Initialize Workspace</h2>
+              <p className="text-[13px] text-muted text-center mb-10 leading-relaxed max-w-[280px] mx-auto font-medium">
+                Establish a secure, isolated environment for your financial operations.
               </p>
               
-              <form onSubmit={handleCreateWorkspace} className="space-y-6">
-                <input 
-                  type="text" 
-                  value={newWorkspaceName} 
-                  onChange={(e) => setNewWorkspaceName(e.target.value)} 
-                  placeholder="e.g. Family Budget" 
-                  className="w-full h-[60px] bg-white/[0.02] border border-white/5 rounded-2xl px-6 text-sm font-bold text-center text-white focus:outline-none focus:border-emerald-500/50 transition-all" 
-                  required
-                  maxLength={30}
-                />
-                
-                <div className="grid grid-cols-2 gap-2 bg-[#141414] p-1 rounded-2xl border border-white/5">
-                  <button 
-                    type="button" 
-                    onClick={() => setNewWorkspaceType('private')}
-                    className={cn(
-                      "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                      newWorkspaceType === 'private' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-zinc-500 hover:text-white hover:bg-white/5"
-                    )}
-                  >
-                    Private
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setNewWorkspaceType('shared')}
-                    className={cn(
-                      "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                      newWorkspaceType === 'shared' ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20" : "text-zinc-500 hover:text-white hover:bg-white/5"
-                    )}
-                  >
-                    Shared
-                  </button>
+              <form onSubmit={handleCreateWorkspace} className="space-y-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">Workspace Designation</label>
+                  <input 
+                    type="text" 
+                    value={newWorkspaceName} 
+                    onChange={(e) => setNewWorkspaceName(e.target.value)} 
+                    placeholder="e.g. Strategic Assets" 
+                    className="w-full h-[64px] bg-surface-hover/50 border border-surface-border rounded-2xl px-6 text-base font-bold text-center text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm" 
+                    required
+                    maxLength={30}
+                  />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 pt-4">
-                  <button type="button" onClick={() => { setIsCreateModalOpen(false); setNewWorkspaceName(''); }} className="h-[50px] rounded-xl text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">
-                    Cancel
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">Operational Mode</label>
+                  <div className="grid grid-cols-2 gap-3 bg-surface-hover/50 p-1.5 rounded-2xl border border-surface-border shadow-inner">
+                    <button 
+                      type="button" 
+                      onClick={() => setNewWorkspaceType('private')}
+                      className={cn(
+                        "py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm",
+                        newWorkspaceType === 'private' ? "bg-surface text-primary border border-surface-border" : "text-muted hover:text-primary hover:bg-surface"
+                      )}
+                    >
+                      Restricted
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => setNewWorkspaceType('shared')}
+                      className={cn(
+                        "py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm",
+                        newWorkspaceType === 'shared' ? "bg-surface text-primary border border-surface-border" : "text-muted hover:text-primary hover:bg-surface"
+                      )}
+                    >
+                      Collaborative
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 pt-6">
+                  <button type="button" onClick={() => { setIsCreateModalOpen(false); setNewWorkspaceName(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover border border-transparent hover:border-surface-border">
+                    Abort
                   </button>
                   <button 
                     type="submit"
                     disabled={loading || !newWorkspaceName.trim()}
-                    className="h-[50px] bg-white text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors disabled:opacity-30 flex items-center justify-center gap-2"
+                    className="h-[64px] bg-primary text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated"
                   >
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm'}
                   </button>
                 </div>
               </form>

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/Button'
 
 export default function CategoriesPage() {
   const { workspaceId } = useDashboardContext()
-  const { categories, isLoading, isError, refresh } = useRealtimeCategories(workspaceId)
+  const { categories, setCategories, isLoading, isError, refresh } = useRealtimeCategories(workspaceId)
   
   const [searchQuery, setSearchQuery] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -84,12 +84,31 @@ export default function CategoriesPage() {
       setIsActionLoading(false)
     }
   }
+  
+  const handleReorder = async (newOrder: Category[]) => {
+    // 1. Optimistic Update
+    setCategories(newOrder)
+    
+    // 2. Prepare payload for DB
+    const updates = newOrder.map((cat, index) => ({
+      id: cat.id,
+      order_index: index
+    }))
+    
+    try {
+      await categoryService.updateCategoriesOrder(updates)
+    } catch (error) {
+      console.error('Failed to save category order:', error)
+      // On failure, we could revert or just refresh from DB
+      refresh()
+    }
+  }
 
   if (isLoading && categories.length === 0) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-4" />
-        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Initialising category system...</p>
+        <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+        <p className="text-[10px] font-black text-muted uppercase tracking-widest">Initialising category system...</p>
       </div>
     )
   }
@@ -99,8 +118,8 @@ export default function CategoriesPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tight uppercase">Categories</h1>
-          <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mt-1">
+          <h1 className="text-3xl font-black text-primary tracking-tight uppercase">Categories</h1>
+          <p className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] mt-1">
             Manage your classification system
           </p>
         </div>
@@ -122,6 +141,7 @@ export default function CategoriesPage() {
         categories={filteredCategories}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onReorder={handleReorder}
       />
 
       {/* Modals & Drawers */}

@@ -4,7 +4,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { redis } from '@/lib/redis/client'
-import { resend } from '@/lib/resend'
+import { mailer } from '@/lib/mailer'
 import { randomInt } from 'node:crypto'
 import { getWorkspaceAccess, WorkspaceRole } from '@/lib/auth/permissions'
 
@@ -220,9 +220,9 @@ export async function createInvite(workspaceId: string, emailString: string) {
 
   // Send invitation email
   try {
-    await resend.emails.send({
-      from: 'Fine Finance <invites@resend.dev>',
-      to: [email],
+    await mailer.sendMail({
+      from: `"Fine Finance" <${process.env.SMTP_FROM}>`,
+      to: email,
       subject: `You've been invited to join a workspace`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #0a0a0a; color: white; border-radius: 24px;">
@@ -238,7 +238,7 @@ export async function createInvite(workspaceId: string, emailString: string) {
       `,
     })
   } catch (err: any) {
-    console.error('Invite Email Error:', err)
+    console.error('[Workspace] Invite Email Error:', err)
     return { error: err.message || 'Failed to send invitation email.' }
   }
 
@@ -260,9 +260,9 @@ export async function sendInviteOtp(token: string) {
   await redis.set(`otp:invite:${token}`, otp, { ex: 600 }) // 10 min
 
   try {
-    await resend.emails.send({
-      from: 'Fine Finance <security@resend.dev>',
-      to: [invite.email],
+    await mailer.sendMail({
+      from: `"Fine Finance Security" <${process.env.SMTP_FROM}>`,
+      to: invite.email,
       subject: `Your Workspace Invitation OTP: ${otp}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #0a0a0a; color: white; border-radius: 24px;">
@@ -451,9 +451,9 @@ export async function requestOwnershipTransfer(workspaceId: string, newOwnerId: 
   await redis.set(`otp:transfer:${workspaceId}:${user.id}`, otp, { ex: 300 })
 
   try {
-    await resend.emails.send({
-      from: 'Fine Finance <security@resend.dev>',
-      to: [user.email!],
+    await mailer.sendMail({
+      from: `"Fine Finance Security" <${process.env.SMTP_FROM}>`,
+      to: user.email!,
       subject: `CRITICAL: Ownership Transfer Code: ${otp}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #0a0a0a; color: white; border-radius: 24px;">

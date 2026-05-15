@@ -12,7 +12,7 @@ export function SubcategoryChips({ subcategories }: SubcategoryChipsProps) {
       {subcategories.map((sub) => (
         <span 
           key={sub.id}
-          className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-white/40 uppercase tracking-widest whitespace-nowrap"
+          className="px-2 py-0.5 rounded-full bg-surface-hover/50 border border-surface-border text-[9px] font-bold text-muted uppercase tracking-widest whitespace-nowrap"
         >
           {sub.name}
         </span>

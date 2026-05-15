@@ -58,12 +58,12 @@ export default function AnalyticsClient({ workspaces, initialWorkspaceId }: Anal
   }
 
   return (
-    <div className="flex-1 px-4 md:px-8 py-8 space-y-8 max-w-7xl mx-auto w-full">
+    <div className="flex-1 px-4 md:px-6 py-6 space-y-6 max-w-screen-2xl mx-auto w-full">
       {/* Header & Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-white uppercase tracking-tight">Analytics</h1>
-          <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mt-1">Cross-Workspace Insights</p>
+          <h1 className="text-2xl font-black text-white uppercase tracking-tight">Analytics</h1>
+          <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] mt-1">Cross-Workspace Insights</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -71,34 +71,34 @@ export default function AnalyticsClient({ workspaces, initialWorkspaceId }: Anal
           <div className="relative">
             <button 
               onClick={() => setShowWorkspaceFilter(!showWorkspaceFilter)}
-              className="h-[44px] px-5 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center gap-3 hover:bg-white/5 transition-all"
+              className="h-10 px-4 bg-white/[0.03] border border-white/5 rounded-xl flex items-center gap-2 hover:bg-white/5 transition-all"
             >
-              <Layers className="w-4 h-4 text-zinc-500" />
-              <span className="text-[10px] font-black text-white uppercase tracking-widest">
+              <Layers className="w-3.5 h-3.5 text-zinc-500" />
+              <span className="text-[9px] font-black text-white uppercase tracking-widest">
                 {selectedWorkspaces.length} {selectedWorkspaces.length === 1 ? 'Workspace' : 'Workspaces'}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-600" />
+              <ChevronDown className="w-3 h-3 text-zinc-600" />
             </button>
 
             {showWorkspaceFilter && (
-              <div className="absolute top-full right-0 mt-2 w-64 bg-[#0d0d0d] border border-white/5 rounded-[1.75rem] p-4 shadow-2xl z-50 space-y-1">
+              <div className="absolute top-full right-0 mt-2 w-64 bg-[#0d0d0d] border border-white/5 rounded-2xl p-3 shadow-2xl z-50 space-y-1">
                 {workspaces.map((w: any) => (
                   <button
                     key={w.id}
                     onClick={() => toggleWorkspace(w.id)}
-                    className="w-full h-10 flex items-center justify-between px-4 rounded-xl hover:bg-white/5 transition-all group"
+                    className="w-full h-9 flex items-center justify-between px-3 rounded-lg hover:bg-white/5 transition-all group"
                   >
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest truncate">{w.name}</span>
-                    {selectedWorkspaces.includes(w.id) && <Check className="w-3.5 h-3.5 text-emerald-500" />}
+                    <span className="text-[9px] font-black text-white uppercase tracking-widest truncate">{w.name}</span>
+                    {selectedWorkspaces.includes(w.id) && <Check className="w-3 h-3 text-emerald-500" />}
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="h-[44px] px-5 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center gap-3">
-            <Calendar className="w-4 h-4 text-zinc-500" />
-            <span className="text-[10px] font-black text-white uppercase tracking-widest">Last 6 Months</span>
+          <div className="h-10 px-4 bg-white/[0.03] border border-white/5 rounded-xl flex items-center gap-3">
+            <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+            <span className="text-[9px] font-black text-white uppercase tracking-widest">Last 6 Months</span>
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function AnalyticsClient({ workspaces, initialWorkspaceId }: Anal
           { label: 'Total Expense', value: data?.summary.expense, icon: ArrowDownRight, color: 'red' },
           { label: 'Net Balance', value: data?.summary.balance, icon: DollarSign, color: 'white' },
         ].map((card, i) => (
-          <div key={i} className="bg-white/[0.02] border border-white/5 rounded-[1.75rem] p-6 space-y-4">
+          <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{card.label}</span>
               <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center border", 
@@ -131,10 +131,10 @@ export default function AnalyticsClient({ workspaces, initialWorkspaceId }: Anal
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Monthly Trends */}
-        <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-8 flex flex-col gap-8 h-[450px]">
+        <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex flex-col gap-6 h-[400px]">
           <div>
-            <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Monthly Performance</h3>
-            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1">Income vs Expense Trends</p>
+            <h3 className="text-[9px] font-black text-white uppercase tracking-[0.3em]">Monthly Performance</h3>
+            <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mt-1">Income vs Expense Trends</p>
           </div>
           
           <div className="flex-1 min-h-0">
@@ -172,10 +172,10 @@ export default function AnalyticsClient({ workspaces, initialWorkspaceId }: Anal
         </div>
 
         {/* Category Breakdown */}
-        <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-8 flex flex-col gap-8 h-[450px]">
+        <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex flex-col gap-6 h-[400px]">
           <div>
-            <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Category Breakdown</h3>
-            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1">Allocation by Category</p>
+            <h3 className="text-[9px] font-black text-white uppercase tracking-[0.3em]">Category Breakdown</h3>
+            <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mt-1">Allocation by Category</p>
           </div>
 
           <div className="flex-1 min-h-0 flex items-center justify-center">

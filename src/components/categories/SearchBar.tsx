@@ -11,13 +11,13 @@ export function SearchBar({ value, onChange, placeholder = "Search categories...
   return (
     <div className="relative group flex-1 max-w-md">
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-        <Search className="w-4 h-4 text-white/20 group-focus-within:text-white/60 transition-colors" />
+        <Search className="w-4 h-4 text-muted group-focus-within:text-primary transition-colors" />
       </div>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-11 bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 text-xs font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+        className="w-full h-11 bg-surface-hover/50 border border-surface-border rounded-2xl pl-11 pr-4 text-xs font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
         placeholder={placeholder}
       />
     </div>

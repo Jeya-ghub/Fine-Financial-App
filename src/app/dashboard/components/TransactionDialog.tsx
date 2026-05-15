@@ -62,7 +62,7 @@ const CustomSelect = ({
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full h-[60px] bg-white/[0.03] border border-white/5 rounded-2xl pl-6 pr-10 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-left flex items-center justify-between",
+          "w-full h-11 bg-white/[0.03] border border-white/5 rounded-xl pl-4 pr-10 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-left flex items-center justify-between",
           value ? "text-white" : "text-zinc-600"
         )}
       >
@@ -235,7 +235,7 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
   const triggerButton = (
     <button
       onClick={() => setIsOpen(true)}
-      className="h-[44px] px-6 bg-white text-black font-black uppercase tracking-widest rounded-2xl text-[10px] hover:bg-zinc-200 active:scale-95 transition-all flex items-center gap-2 shadow-xl shadow-white/5 cursor-pointer select-none"
+      className="h-10 px-4 bg-white text-black font-black uppercase tracking-widest rounded-xl text-[10px] hover:bg-zinc-200 active:scale-95 transition-all flex items-center gap-2 shadow-xl shadow-white/5 cursor-pointer select-none"
     >
       <Plus className="w-4 h-4" />
       <span className="hidden xs:inline">New Transaction</span>
@@ -261,10 +261,10 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden max-h-[90vh] flex flex-col"
+            className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden max-h-[90vh] flex flex-col"
           >
-            <div className="p-8 md:p-12 overflow-y-auto custom-scrollbar">
-              <div className="flex items-center justify-between mb-10">
+            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
+              <div className="flex items-center justify-between mb-8">
                 <h2 className="text-xl font-bold tracking-tight text-white/90">Add Transaction</h2>
                 <button onClick={() => setIsOpen(false)} disabled={loading} className="p-2 text-zinc-500 hover:text-white transition-colors">
                   <X className="w-6 h-6" />
@@ -280,12 +280,12 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
                   <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.3em]">Ledger Updated</p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl h-[60px] select-none">
-                    <button type="button" onClick={() => setType('expense')} className={cn("flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer", type === 'expense' ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-zinc-500 hover:text-white')}>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-xl h-11 select-none">
+                    <button type="button" onClick={() => setType('expense')} className={cn("flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer", type === 'expense' ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-zinc-500 hover:text-white')}>
                       <ArrowDownRight className="w-4 h-4" /> Expense
                     </button>
-                    <button type="button" onClick={() => setType('income')} className={cn("flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer", type === 'income' ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-zinc-500 hover:text-white')}>
+                    <button type="button" onClick={() => setType('income')} className={cn("flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer", type === 'income' ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-zinc-500 hover:text-white')}>
                       <ArrowUpRight className="w-4 h-4" /> Income
                     </button>
                   </div>
@@ -293,8 +293,8 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Date*</label>
                     <div className="relative">
-                      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} max={new Date().toISOString().split('T')[0]} className="w-full h-[60px] bg-white/[0.03] border border-white/5 rounded-2xl px-6 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-white/10 transition-all [color-scheme:dark]" required />
-                      <Calendar className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} max={new Date().toISOString().split('T')[0]} className="w-full h-11 bg-white/[0.03] border border-white/5 rounded-xl px-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-white/10 transition-all [color-scheme:dark]" required />
+                      <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
                     </div>
                   </div>
 
@@ -323,7 +323,7 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Notes</label>
-                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Context..." className="w-full h-[90px] bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-4 text-sm font-medium text-white placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none" />
+                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Context..." className="w-full h-20 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm font-medium text-white placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none custom-scrollbar" />
                     
                     <AnimatePresence>
                       {suggestion && (
@@ -345,17 +345,17 @@ export default function TransactionDialog({ workspaceId, categories, showTrigger
                     </AnimatePresence>
                   </div>
 
-                   <div className="flex flex-col items-center py-6 border-t border-white/5">
+                   <div className="flex flex-col items-center py-4 border-t border-white/5">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-2">Amount (INR)*</span>
                     <div className="relative flex items-center justify-center w-full">
-                      <span className="absolute left-12 text-3xl font-black text-zinc-700 tracking-tighter">₹</span>
-                      <input ref={amountInputRef} type="number" inputMode="decimal" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="w-full bg-transparent text-7xl font-black text-white text-center placeholder:text-white/5 focus:outline-none tracking-tighter [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" required />
+                      <span className="absolute left-10 text-2xl font-black text-zinc-700 tracking-tighter">₹</span>
+                      <input ref={amountInputRef} type="number" inputMode="decimal" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="w-full bg-transparent text-5xl font-black text-white text-center placeholder:text-white/5 focus:outline-none tracking-tighter [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" required />
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <button type="submit" disabled={loading || !amount || !categoryId} className="w-full h-[70px] bg-white text-black font-black uppercase tracking-widest rounded-[2rem] transition-all disabled:opacity-30 flex items-center justify-center gap-3 shadow-2xl shadow-white/5 cursor-pointer">
-                      {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <><CheckCircle2 className="w-5 h-5" /> Save Entry</>}
+                  <div className="space-y-3">
+                    <button type="submit" disabled={loading || !amount || !categoryId} className="w-full h-11 bg-white text-black font-black uppercase tracking-widest rounded-xl transition-all disabled:opacity-30 flex items-center justify-center gap-2 shadow-2xl shadow-white/5 cursor-pointer text-xs">
+                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Save Entry</>}
                     </button>
                     <button type="button" onClick={() => setIsOpen(false)} className="w-full text-center text-[10px] font-black text-zinc-600 hover:text-white transition-colors uppercase tracking-[0.3em] cursor-pointer">Discard Draft</button>
                   </div>

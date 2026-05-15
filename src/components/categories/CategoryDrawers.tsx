@@ -68,21 +68,21 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed inset-y-0 right-0 z-[500] w-full max-w-md bg-[#0a0a0a] border-l border-white/10 shadow-2xl flex flex-col"
+            className="fixed inset-y-0 right-0 z-[500] w-full max-w-md bg-surface border-l border-surface-border shadow-2xl flex flex-col"
           >
             {/* Header */}
             <div className="p-8 flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-black text-white uppercase tracking-tight">
+                <h3 className="text-xl font-black text-primary uppercase tracking-tight">
                   {initialData ? 'Edit Category' : 'New Category'}
                 </h3>
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
                   Organize your finances efficiently
                 </p>
               </div>
               <button 
                 onClick={onClose}
-                className="p-3 rounded-2xl hover:bg-white/5 text-white/20 hover:text-white transition-all"
+                className="p-3 rounded-2xl hover:bg-surface-hover text-muted hover:text-primary transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -92,13 +92,13 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
             <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-8 pt-0 space-y-8 custom-scrollbar">
               {/* Type Toggle */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Category Type</label>
-                <div className="grid grid-cols-2 gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest px-1">Category Type</label>
+                <div className="grid grid-cols-2 gap-2 bg-surface-hover/30 p-1 rounded-2xl border border-surface-border">
                   <button
                     type="button"
                     onClick={() => setType('expense')}
                     className={`flex items-center justify-center gap-2 h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                      type === 'expense' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-white/40 hover:text-white'
+                      type === 'expense' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-muted hover:text-primary'
                     }`}
                   >
                     <TrendingDown className="w-3.5 h-3.5" />
@@ -108,7 +108,7 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
                     type="button"
                     onClick={() => setType('income')}
                     className={`flex items-center justify-center gap-2 h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                      type === 'income' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-white/40 hover:text-white'
+                      type === 'income' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-muted hover:text-primary'
                     }`}
                   >
                     <TrendingUp className="w-3.5 h-3.5" />
@@ -119,7 +119,7 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
 
               {/* Name Input */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Category Name</label>
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest px-1">Category Name</label>
                 <input
                   autoFocus
                   required
@@ -127,13 +127,13 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Food & Dining, Salary"
-                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  className="w-full h-14 bg-surface-hover/30 border border-surface-border rounded-2xl px-5 text-sm font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
                 />
               </div>
 
               {/* Subcategories Input */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Subcategories</label>
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest px-1">Subcategories</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -146,12 +146,12 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
                       }
                     }}
                     placeholder="Type and press Enter..."
-                    className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 pr-14 text-sm font-bold text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                    className="w-full h-14 bg-surface-hover/30 border border-surface-border rounded-2xl px-5 pr-14 text-sm font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
                   />
                   <button
                     type="button"
                     onClick={addSubcategory}
-                    className="absolute right-2 top-2 w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                    className="absolute right-2 top-2 w-10 h-10 rounded-xl bg-primary text-background flex items-center justify-center hover:opacity-90 transition-all shadow-sm active:scale-90"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
@@ -163,21 +163,21 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
                       layout
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="group flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20"
+                      className="group flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl bg-surface-hover border border-surface-border hover:border-primary/20 transition-all"
                       key={sub}
                     >
-                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{sub}</span>
+                      <span className="text-[10px] font-black text-primary uppercase tracking-widest">{sub}</span>
                       <button
                         type="button"
                         onClick={() => removeSubcategory(sub)}
-                        className="p-1 rounded-lg hover:bg-rose-500/20 text-blue-400 hover:text-rose-400 transition-all"
+                        className="p-1 rounded-lg hover:bg-rose-500/10 text-muted hover:text-rose-500 transition-all"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </motion.div>
                   ))}
                   {subcategories.length === 0 && (
-                    <p className="text-[10px] font-bold text-white/10 uppercase tracking-widest italic p-2">
+                    <p className="text-[10px] font-bold text-muted/20 uppercase tracking-widest italic p-2">
                       No subcategories added yet
                     </p>
                   )}
@@ -186,7 +186,7 @@ export function CategoryDrawer({ isOpen, onClose, onSave, initialData, isLoading
             </form>
 
             {/* Footer */}
-            <div className="p-8 border-t border-white/5 bg-white/[0.02] backdrop-blur-xl">
+            <div className="p-8 border-t border-surface-border bg-surface shrink-0">
               <Button
                 onClick={handleSave}
                 isLoading={isLoading}

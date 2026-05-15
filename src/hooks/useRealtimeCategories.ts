@@ -52,6 +52,7 @@ export function useRealtimeCategories(workspaceId: string) {
 
   return {
     categories,
+    setCategories,
     isLoading,
     isError,
     refresh: loadCategories

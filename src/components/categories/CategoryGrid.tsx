@@ -1,4 +1,4 @@
-import React from 'react'
+import { motion, Reorder } from 'framer-motion'
 import { Category } from '@/types/category.types'
 import { CategoryCard } from './CategoryCard'
 
@@ -6,11 +6,17 @@ interface CategoryGridProps {
   categories: Category[]
   onEdit: (category: Category) => void
   onDelete: (category: Category) => void
+  onReorder: (newOrder: Category[]) => void
 }
 
-export function CategoryGrid({ categories, onEdit, onDelete }: CategoryGridProps) {
+export function CategoryGrid({ categories, onEdit, onDelete, onReorder }: CategoryGridProps) {
   const incomeCategories = categories.filter(c => c.type === 'income')
   const expenseCategories = categories.filter(c => c.type === 'expense')
+
+  const handleReorder = (type: 'income' | 'expense', reordered: Category[]) => {
+    const otherType = type === 'income' ? expenseCategories : incomeCategories
+    onReorder([...reordered, ...otherType])
+  }
 
   return (
     <div className="space-y-12">
@@ -20,16 +26,26 @@ export function CategoryGrid({ categories, onEdit, onDelete }: CategoryGridProps
             Income Categories
             <div className="flex-1 h-px bg-emerald-500/10" />
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <Reorder.Group 
+            axis="y" 
+            values={incomeCategories} 
+            onReorder={(newOrder) => handleReorder('income', newOrder)}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          >
             {incomeCategories.map(cat => (
-              <CategoryCard 
+              <Reorder.Item 
                 key={cat.id} 
-                category={cat} 
-                onEdit={onEdit} 
-                onDelete={onDelete} 
-              />
+                value={cat}
+                className="relative"
+              >
+                <CategoryCard 
+                  category={cat} 
+                  onEdit={onEdit} 
+                  onDelete={onDelete} 
+                />
+              </Reorder.Item>
             ))}
-          </div>
+          </Reorder.Group>
         </div>
       )}
 
@@ -39,22 +55,32 @@ export function CategoryGrid({ categories, onEdit, onDelete }: CategoryGridProps
             Expense Categories
             <div className="flex-1 h-px bg-rose-500/10" />
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <Reorder.Group 
+            axis="y" 
+            values={expenseCategories} 
+            onReorder={(newOrder) => handleReorder('expense', newOrder)}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          >
             {expenseCategories.map(cat => (
-              <CategoryCard 
+              <Reorder.Item 
                 key={cat.id} 
-                category={cat} 
-                onEdit={onEdit} 
-                onDelete={onDelete} 
-              />
+                value={cat}
+                className="relative"
+              >
+                <CategoryCard 
+                  category={cat} 
+                  onEdit={onEdit} 
+                  onDelete={onDelete} 
+                />
+              </Reorder.Item>
             ))}
-          </div>
+          </Reorder.Group>
         </div>
       )}
 
       {categories.length === 0 && (
         <div className="py-20 text-center">
-          <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No categories found</p>
+          <p className="text-muted/20 text-xs font-bold uppercase tracking-widest">No categories found</p>
         </div>
       )}
     </div>

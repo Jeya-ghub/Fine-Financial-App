@@ -8,7 +8,7 @@ import {
   Lock
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { updateProfile, requestAccountDeletion, revokeAccountDeletion, terminateSession } from '@/app/actions/auth'
+import { updateProfile, requestAccountDeletion, revokeAccountDeletion, terminateSession, terminateAllOtherSessions } from '@/app/actions/auth'
 import { useDashboardContext } from '@/components/providers/DashboardProvider'
 
 const TABS = [
@@ -69,20 +69,24 @@ export default function SettingsClient({
   }
 
   const handleKillAll = async () => {
-    // In a real app, call an API to invalidate all other tokens
-    setSessions(s => s.filter(x => x.isCurrent))
+    setLoading(true)
+    const res = await terminateAllOtherSessions()
+    if (res.success) {
+      setSessions(s => s.filter(x => x.isCurrent))
+    }
+    setLoading(false)
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-full bg-background transition-colors duration-500">
+    <div className="flex flex-col md:flex-row h-full bg-background transition-colors duration-500 overflow-hidden">
       {/* ── Left Navigation Pane ── */}
-      <div className="w-full md:w-72 border-r border-surface-border bg-surface p-4 flex flex-col z-10 shrink-0 overflow-y-auto">
-        <div className="mb-8 p-4">
-          <h2 className="text-xl font-black text-primary uppercase tracking-tight">Studio</h2>
-          <p className="text-[10px] text-secondary font-bold uppercase tracking-widest mt-1">Environment Settings</p>
+      <div className="w-full md:w-64 border-r border-surface-border bg-surface p-5 flex flex-col z-10 shrink-0 overflow-y-auto shadow-sm">
+        <div className="mb-8 px-2">
+          <h2 className="text-xl font-black text-primary uppercase tracking-tight leading-tight">Studio</h2>
+          <p className="text-[9px] text-muted font-bold uppercase tracking-[0.3em] mt-1">Governance & Controls</p>
         </div>
 
-        <nav className="space-y-2 flex-1">
+        <nav className="space-y-3 flex-1">
           {TABS.map(tab => {
             const isActive = activeTab === tab.id
             return (
@@ -90,19 +94,26 @@ export default function SettingsClient({
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-4 rounded-2xl transition-all relative group",
-                  isActive ? "bg-surface-hover text-primary shadow-lg" : "text-secondary hover:text-primary hover:bg-surface-hover/50"
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative group",
+                  isActive 
+                    ? "bg-surface-hover text-primary shadow-premium ring-1 ring-primary/5" 
+                    : "text-muted hover:text-primary hover:bg-surface-hover/50"
                 )}
               >
-                <tab.icon className={cn("w-4 h-4 transition-colors", isActive ? "text-accent-emerald" : "")} />
+                <div className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center transition-all shadow-sm border",
+                  isActive ? "bg-primary text-background border-primary" : "bg-surface-hover text-muted border-surface-border"
+                )}>
+                  <tab.icon className="w-4.5 h-4.5" />
+                </div>
                 <div className="text-left flex-1">
-                  <span className="block text-sm font-bold tracking-tight">{tab.label}</span>
+                  <span className="block text-[13px] font-black tracking-tight">{tab.label}</span>
                   {tab.id === 'profile' && isActive && (
-                    <span className="block text-[10px] text-secondary/70 mt-1 truncate">{username || 'Unknown'} • {user.email}</span>
+                    <span className="block text-[9px] text-muted font-medium mt-0.5 truncate max-w-[140px]">{username || 'Unknown'} • {user.email}</span>
                   )}
                 </div>
                 {isActive && (
-                  <motion.div layoutId="active-settings-tab" className="absolute left-0 w-1 h-6 bg-accent-emerald rounded-r-full" />
+                  <motion.div layoutId="active-settings-tab" className="absolute left-0 w-1.5 h-8 bg-primary rounded-r-full" />
                 )}
               </button>
             )
@@ -119,68 +130,77 @@ export default function SettingsClient({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="flex-1 p-6 md:p-12 overflow-y-auto custom-scrollbar"
+            className="flex-1 p-6 md:p-8 lg:p-10 overflow-y-auto custom-scrollbar"
           >
-            <div className="max-w-3xl">
-              
+            <div className="max-w-3xl mx-auto">
               {/* === PROFILE & IDENTITY === */}
               {activeTab === 'profile' && (
                 <div className="space-y-12">
                   <div className="mb-8">
-                    <h1 className="text-3xl font-black text-primary tracking-tighter">Profile & Identity</h1>
-                    <p className="text-sm text-secondary mt-2">Manage your core presence within the workspace.</p>
+                    <h1 className="text-3xl font-black text-primary tracking-tighter uppercase">Profile & Identity</h1>
+                    <p className="text-[13px] text-muted mt-2 font-medium max-w-lg">Establish your unique identifier and communication channels within the operational framework.</p>
                   </div>
 
-                  <div className="p-8 rounded-[2rem] border border-surface-border bg-surface space-y-8 shadow-sm">
+                  <div className="p-8 rounded-3xl border border-surface-border bg-surface space-y-8 shadow-premium">
                     {/* Username */}
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">Primary Identity</label>
-                        <span className="text-[10px] font-bold text-muted">{username.length}/10</span>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center px-1">
+                        <label className="text-[9px] font-black text-muted uppercase tracking-[0.25em]">Primary Designation</label>
+                        <span className="text-[9px] font-black text-muted bg-surface-hover px-2 py-0.5 rounded-md border border-surface-border">{username.length}/10</span>
                       </div>
-                      <input 
-                        type="text" 
-                        value={username}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, 10).toUpperCase()
-                          setUsername(val)
-                        }}
-                        placeholder="USERNAME"
-                        className="w-full h-[60px] bg-background border border-surface-border rounded-2xl px-6 text-xl font-black text-primary focus:outline-none focus:ring-2 focus:ring-accent-emerald/50 transition-all font-mono tracking-[0.2em]"
-                      />
-                      <p className="text-[10px] text-muted font-medium ml-1">Strictly Letters Only (A-Z). No spaces or symbols.</p>
+                      <div className="relative group">
+                        <input 
+                          type="text" 
+                          value={username}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, 10).toUpperCase()
+                            setUsername(val)
+                          }}
+                          placeholder="DESIGNATION"
+                          className="w-full h-12 bg-surface-hover/50 border border-surface-border rounded-xl px-6 text-xl font-black text-primary focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all font-mono tracking-[0.2em] shadow-inner"
+                        />
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+                          <User className="w-5 h-5" />
+                        </div>
+                      </div>
+                      <p className="text-[9px] text-muted font-bold ml-1 uppercase tracking-widest opacity-60">Alphabetical Characters Only (A-Z)</p>
                       
                       {username !== initialUsername && (
                         <motion.button 
-                          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                           onClick={handleSaveUsername}
                           disabled={loading}
-                          className="h-[40px] px-6 bg-primary text-background text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all"
+                          className="h-10 px-8 bg-primary text-background text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all shadow-elevated flex items-center justify-center gap-3"
                         >
-                          {loading ? 'Saving...' : 'Save Identity'}
+                          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Authorize Identity Change'}
                         </motion.button>
                       )}
                     </div>
 
-                    <hr className="border-surface-border" />
+                    <div className="h-px bg-surface-border" />
 
                     {/* Email */}
-                    <div className={cn("space-y-3 transition-all", emailOtpMode && "opacity-50 pointer-events-none")}>
-                      <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">Secondary Identity (Email)</label>
-                      <input 
-                        type="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-[60px] bg-background border border-surface-border rounded-2xl px-6 text-sm font-bold text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue/50 transition-all"
-                      />
+                    <div className={cn("space-y-4 transition-all", emailOtpMode && "opacity-30 blur-[2px] pointer-events-none")}>
+                      <label className="text-[9px] font-black text-muted uppercase tracking-[0.25em] ml-1">Communication Channel (Email)</label>
+                      <div className="relative group">
+                        <input 
+                          type="email" 
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="w-full h-12 bg-surface-hover/50 border border-surface-border rounded-xl px-6 text-[14px] font-bold text-primary focus:outline-none focus:ring-4 focus:ring-accent-blue/5 transition-all shadow-inner"
+                        />
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-accent-blue transition-colors">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                      </div>
                       
                       {email !== user.email && !emailOtpMode && (
                         <motion.button 
-                          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                           onClick={() => setEmailOtpMode(true)}
-                          className="h-[40px] px-6 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-accent-blue hover:text-white transition-colors"
+                          className="h-10 px-8 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-accent-blue hover:text-white transition-all shadow-sm"
                         >
-                          Request Email Change
+                          Initialize Channel Migration
                         </motion.button>
                       )}
                     </div>
@@ -189,23 +209,30 @@ export default function SettingsClient({
                     <AnimatePresence>
                       {emailOtpMode && (
                         <motion.div 
-                          initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                          className="p-6 rounded-2xl border border-blue-500/20 bg-blue-500/5 space-y-4"
+                          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
+                          className="p-8 rounded-3xl border border-accent-blue/30 bg-accent-blue/5 space-y-6 shadow-premium relative overflow-hidden"
                         >
-                          <div className="flex items-center gap-3 text-blue-500">
-                            <Lock className="w-5 h-5" />
-                            <h3 className="text-sm font-bold tracking-tight">Security Lock Engaged</h3>
+                          <div className="absolute top-0 left-0 w-full h-1 bg-accent-blue" />
+                          <div className="flex items-center gap-3 text-accent-blue">
+                            <div className="w-10 h-10 rounded-lg bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20">
+                              <Lock className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h3 className="text-[14px] font-black tracking-tight uppercase">High-Entropy Lock Active</h3>
+                              <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-0.5">Verify Ownership to Continue</p>
+                            </div>
                           </div>
-                          <p className="text-xs text-zinc-400 font-medium">To complete this high-priority change, please enter the OTP sent to <strong className="text-white">{email}</strong>.</p>
-                          <div className="flex gap-4">
-                            <input type="text" placeholder="------" className="w-32 h-[50px] bg-black/50 border border-blue-500/30 rounded-xl text-center text-xl font-mono text-blue-400 tracking-[0.3em] focus:outline-none focus:border-blue-500" maxLength={6} />
-                            <button onClick={() => setEmailOtpMode(false)} className="px-6 h-[50px] bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20">Verify</button>
-                            <button onClick={() => {setEmail(user.email); setEmailOtpMode(false)}} className="px-4 text-xs font-bold text-zinc-500 hover:text-white transition-colors">Cancel</button>
+                          <p className="text-[12px] text-muted font-medium leading-relaxed">To validate this migration, provide the 6-digit verification code dispatched to <strong className="text-primary font-black underline decoration-accent-blue underline-offset-4">{email}</strong>.</p>
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <input type="text" placeholder="000000" className="flex-1 h-12 bg-surface border border-accent-blue/30 rounded-xl text-center text-xl font-black text-accent-blue tracking-[0.4em] focus:outline-none focus:ring-4 focus:ring-accent-blue/10 shadow-inner" maxLength={6} />
+                            <div className="flex gap-2 shrink-0">
+                              <button onClick={() => setEmailOtpMode(false)} className="px-6 h-12 bg-accent-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-accent-blue/20 hover:opacity-90 transition-all">Verify Auth</button>
+                              <button onClick={() => {setEmail(user.email); setEmailOtpMode(false)}} className="px-4 h-12 rounded-xl text-[10px] font-black text-muted hover:text-primary transition-colors border border-transparent hover:border-surface-border">Abort</button>
+                            </div>
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
-
                   </div>
                 </div>
               )}
@@ -213,63 +240,79 @@ export default function SettingsClient({
               {/* === SECURITY & SESSIONS === */}
               {activeTab === 'security' && (
                 <div className="space-y-12">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                     <div>
-                      <h1 className="text-3xl font-black text-primary tracking-tighter">Security Command Centre</h1>
-                      <p className="text-sm text-secondary mt-2">Monitor active sessions and security protocols.</p>
+                      <h1 className="text-3xl font-black text-primary tracking-tighter uppercase leading-tight">Security Protocol</h1>
+                      <p className="text-[13px] text-muted mt-2 font-medium max-w-lg">Monitor active authorization tokens and establish multi-factor authentication frequency.</p>
                     </div>
                     {/* Security Health Badge */}
-                    <div className="px-4 py-2 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
-                      <ShieldCheck className="w-5 h-5 text-accent-emerald" />
-                      <span className="text-[10px] font-black text-accent-emerald uppercase tracking-widest">Account Secure</span>
+                    <div className="px-4 py-3 rounded-2xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center gap-3 shadow-premium self-start md:self-auto">
+                      <div className="w-9 h-9 rounded-lg bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/20 shadow-sm animate-pulse">
+                        <ShieldCheck className="w-5 h-5 text-accent-emerald" />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-black text-accent-emerald uppercase tracking-[0.2em]">Account Secure</span>
+                        <span className="block text-[8px] text-accent-emerald/70 font-bold uppercase tracking-[0.1em] mt-0.5">Hardware Protected</span>
+                      </div>
                     </div>
                   </div>
 
                   {/* Active Sessions Bento Tiles */}
                   <div>
-                    <h3 className="text-[10px] font-black text-muted uppercase tracking-widest mb-4">Active Sessions</h3>
+                    <div className="flex items-center justify-between mb-6 px-1">
+                      <h3 className="text-[9px] font-black text-muted uppercase tracking-[0.3em]">Active Credentials</h3>
+                      {sessions.length > 1 && (
+                        <button onClick={handleKillAll} className="text-[9px] font-black text-accent-red hover:underline uppercase tracking-widest transition-all flex items-center gap-2">
+                          <X className="w-3 h-3" /> Terminate All Others
+                        </button>
+                      )}
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <AnimatePresence>
                         {sessions.map((session, i) => {
-                          // Mock geo-fencing unusual activity for the second session
                           const isUnusual = !session.isCurrent && i === 1
                           return (
                             <motion.div 
                               key={session.id}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
                               transition={{ delay: i * 0.1 }}
                               className={cn(
-                                "p-5 rounded-[2rem] border relative overflow-hidden group transition-all",
-                                session.isCurrent ? "bg-surface border-primary/20 shadow-premium" : "bg-surface border-surface-border",
+                                "p-6 rounded-3xl border relative overflow-hidden group transition-all shadow-premium hover:shadow-elevated hover:-translate-y-0.5",
+                                session.isCurrent ? "bg-surface border-primary/20 ring-4 ring-primary/5" : "bg-surface border-surface-border",
                                 isUnusual && "bg-accent-amber/5 border-accent-amber/20"
                               )}
                             >
-                              {/* One-Tap Kill Switch */}
                               {!session.isCurrent && (
-                                <button onClick={() => handleKillSession(session.id)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center text-muted hover:text-primary hover:bg-accent-red transition-all opacity-0 group-hover:opacity-100">
+                                <button onClick={() => handleKillSession(session.id)} className="absolute top-4 right-4 w-9 h-9 rounded-lg bg-surface-hover border border-surface-border flex items-center justify-center text-muted hover:text-white hover:bg-accent-red hover:border-accent-red transition-all opacity-0 group-hover:opacity-100 shadow-sm active:scale-90">
                                   <X className="w-4 h-4" />
                                 </button>
                               )}
 
                               <div className="flex gap-4 items-start">
-                                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shrink-0", isUnusual ? "bg-accent-amber/10 text-accent-amber" : "bg-surface-hover text-primary")}>
+                                <div className={cn(
+                                  "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm border transition-all group-hover:scale-105", 
+                                  isUnusual ? "bg-accent-amber/10 text-accent-amber border-accent-amber/20" : "bg-surface-hover text-primary border-surface-border"
+                                )}>
                                   {session.device.includes('iPhone') || session.device.includes('Android') ? <Smartphone className="w-6 h-6" /> : <Laptop className="w-6 h-6" />}
                                 </div>
-                                <div className="space-y-1 flex-1">
+                                <div className="space-y-1.5 flex-1 pt-0.5">
                                   <div className="flex items-center gap-2">
-                                    <h4 className="text-sm font-bold text-primary">{session.device}</h4>
-                                    {session.isCurrent && <span className="px-2 py-0.5 rounded bg-accent-emerald/10 text-[9px] font-black uppercase tracking-widest text-accent-emerald">Current</span>}
+                                    <h4 className="text-[14px] font-black text-primary tracking-tight">{session.device}</h4>
+                                    {session.isCurrent && <span className="px-2 py-0.5 rounded-md bg-primary/10 text-[8px] font-black uppercase tracking-[0.2em] text-primary border border-primary/20 shadow-sm">Current</span>}
                                   </div>
-                                  <p className="text-xs text-secondary font-medium">{session.browser} on {session.os}</p>
-                                  <div className="flex items-center gap-2 mt-2 text-[10px] text-muted font-mono">
-                                    <span>{session.location}</span> • 
+                                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest">{session.browser} • {session.os}</p>
+                                  <div className="flex items-center gap-2 mt-3 text-[9px] text-muted font-mono bg-surface-hover/50 px-2 py-1.5 rounded-lg border border-surface-border/50 w-max">
+                                    <span className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-accent-emerald shadow-[0_0_8px_rgba(16,185,129,0.5)]" /> {session.location}</span> • 
                                     <div className="group/tooltip relative cursor-help flex items-center">
-                                      <Info className="w-3 h-3 hover:text-primary" />
-                                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-2 bg-surface border border-surface-border rounded-lg text-primary text-[10px] opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none shadow-xl">
-                                        IP: {session.ip}<br/>
-                                        Time: {new Date(session.last_active).toLocaleString('en-GB')}
+                                      <Info className="w-3 h-3 hover:text-primary transition-colors" />
+                                      <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-max p-4 bg-surface border border-surface-border rounded-2xl text-primary text-[11px] opacity-0 group-hover/tooltip:opacity-100 transition-all pointer-events-none shadow-2xl z-20 font-sans border-t-4 border-t-primary">
+                                        <div className="space-y-1">
+                                          <p className="font-black uppercase tracking-widest text-[9px] text-muted mb-2 border-b border-surface-border pb-1">Technical Audit</p>
+                                          <p><span className="text-muted">Network IP:</span> {session.ip}</p>
+                                          <p><span className="text-muted">Last Active:</span> {new Date(session.last_active).toLocaleString('en-GB')}</p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -280,33 +323,37 @@ export default function SettingsClient({
                         })}
                       </AnimatePresence>
                     </div>
-
-                    {sessions.length > 1 && (
-                      <div className="mt-6">
-                        <button onClick={handleKillAll} className="text-[10px] font-black text-accent-red hover:opacity-80 uppercase tracking-widest transition-colors flex items-center gap-2">
-                          <X className="w-3 h-3" /> Sign Out All Other Sessions
-                        </button>
-                      </div>
-                    )}
                   </div>
 
-                  <hr className="border-surface-border" />
+                  <div className="h-px bg-surface-border" />
 
                   {/* Frequency Control */}
-                  <div>
-                    <h3 className="text-[10px] font-black text-muted uppercase tracking-widest mb-4">Biometric / OTP Frequency</h3>
-                    <div className="bg-surface border border-surface-border p-1.5 rounded-2xl inline-flex relative gap-1">
-                      <button onClick={() => setOtpFrequency('strict')} className={cn("relative z-10 px-8 py-3 text-xs font-bold transition-colors w-48 rounded-xl flex items-center justify-center", otpFrequency === 'strict' ? "text-primary" : "text-secondary hover:text-primary")}>
-                        {otpFrequency === 'strict' && <motion.div layoutId="otp-slider" className="absolute inset-0 bg-background border border-surface-border rounded-xl -z-10 shadow-sm" />}
-                        Every Login
+                  <div className="p-8 rounded-3xl border border-surface-border bg-surface shadow-premium">
+                    <h3 className="text-[9px] font-black text-muted uppercase tracking-[0.3em] mb-6 ml-1">Authorization Persistence</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-surface-hover/50 p-1.5 rounded-2xl border border-surface-border shadow-inner">
+                      <button 
+                        onClick={() => setOtpFrequency('strict')} 
+                        className={cn(
+                          "relative z-10 px-6 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2.5 shadow-sm", 
+                          otpFrequency === 'strict' ? "bg-surface text-primary border border-surface-border shadow-elevated" : "text-muted hover:text-primary hover:bg-surface"
+                        )}
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        Strict Protocol
                       </button>
-                      <button onClick={() => setOtpFrequency('comfort')} className={cn("relative z-10 px-8 py-3 text-xs font-bold transition-colors w-48 rounded-xl flex items-center justify-center", otpFrequency === 'comfort' ? "text-primary" : "text-secondary hover:text-primary")}>
-                        {otpFrequency === 'comfort' && <motion.div layoutId="otp-slider" className="absolute inset-0 bg-background border border-surface-border rounded-xl -z-10 shadow-sm" />}
-                        Remember (30 Days)
+                      <button 
+                        onClick={() => setOtpFrequency('comfort')} 
+                        className={cn(
+                          "relative z-10 px-6 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2.5 shadow-sm", 
+                          otpFrequency === 'comfort' ? "bg-surface text-primary border border-surface-border shadow-elevated" : "text-muted hover:text-primary hover:bg-surface"
+                        )}
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        Trust Environment
                       </button>
                     </div>
+                    <p className="text-[10px] text-muted font-medium mt-4 text-center opacity-60">Comfort mode allows session persistence for 30 days on this hardware.</p>
                   </div>
-
                 </div>
               )}
 
@@ -314,33 +361,33 @@ export default function SettingsClient({
               {activeTab === 'appearance' && (
                 <div className="space-y-12">
                   <div className="mb-8">
-                    <h1 className="text-3xl font-black text-primary tracking-tighter">Appearance</h1>
-                    <p className="text-sm text-secondary mt-2">Customize your visual workspace.</p>
+                    <h1 className="text-3xl font-black text-primary tracking-tighter uppercase leading-tight">Visual Interface</h1>
+                    <p className="text-[13px] text-muted mt-2 font-medium max-w-lg">Establish your preferred sensory environment. Optimized for both low-light operations and high-visibility monitoring.</p>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl">
                     {/* Dark Mode Card */}
                     <button 
                       onClick={() => theme !== 'dark' && toggleTheme()}
                       className={cn(
-                        "group text-left space-y-4 p-4 rounded-[2.5rem] border transition-all hover:scale-[1.02] active:scale-[0.98]",
-                        theme === 'dark' ? "bg-surface border-accent-emerald shadow-premium" : "bg-surface border-surface-border opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
+                        "group text-left space-y-4 p-4 rounded-3xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-premium hover:shadow-elevated relative overflow-hidden",
+                        theme === 'dark' ? "bg-surface border-primary ring-4 ring-primary/5" : "bg-surface border-surface-border opacity-60 hover:opacity-100"
                       )}
                     >
-                      <div className="h-40 rounded-3xl bg-[#000] border border-white/5 flex items-center justify-center overflow-hidden relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent-emerald/10 to-transparent" />
-                        <div className="w-24 h-16 bg-[#0d0d0d] rounded-2xl border border-white/10 flex flex-col p-3 gap-2 shadow-2xl">
-                          <div className="w-full h-2.5 bg-white/20 rounded-full" />
-                          <div className="w-2/3 h-2.5 bg-accent-emerald/50 rounded-full" />
+                      <div className="h-40 rounded-2xl bg-[#000] border border-white/5 flex items-center justify-center overflow-hidden relative shadow-inner">
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent-emerald/20 to-transparent opacity-50" />
+                        <div className="w-32 h-20 bg-[#0d0d0d] rounded-2xl border border-white/10 flex flex-col p-4 gap-3 shadow-2xl relative z-10">
+                          <div className="w-full h-3 bg-white/20 rounded-full" />
+                          <div className="w-2/3 h-3 bg-accent-emerald/50 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                         </div>
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                       </div>
-                      <div className="px-2">
-                        <span className="block text-sm font-bold text-primary">High Contrast Dark</span>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className={cn("text-[9px] font-black uppercase tracking-widest", theme === 'dark' ? "text-accent-emerald" : "text-muted")}>
-                            {theme === 'dark' ? 'Active' : 'OLED Optimized'}
-                          </span>
+                      <div className="px-4">
+                        <div className="flex items-center justify-between">
+                          <span className="block text-base font-black text-primary tracking-tight">OLED NOIR</span>
+                          <div className={cn("w-4 h-4 rounded-full border-2 transition-all", theme === 'dark' ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]" : "border-surface-border")} />
                         </div>
+                        <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-2">Maximum Battery Efficiency</p>
                       </div>
                     </button>
 
@@ -348,24 +395,24 @@ export default function SettingsClient({
                     <button 
                       onClick={() => theme !== 'light' && toggleTheme()}
                       className={cn(
-                        "group text-left space-y-4 p-4 rounded-[2.5rem] border transition-all hover:scale-[1.02] active:scale-[0.98]",
-                        theme === 'light' ? "bg-white border-accent-blue shadow-premium" : "bg-white border-surface-border opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
+                        "group text-left space-y-4 p-4 rounded-3xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-premium hover:shadow-elevated relative overflow-hidden",
+                        theme === 'light' ? "bg-surface border-primary ring-4 ring-primary/5" : "bg-surface border-surface-border opacity-60 hover:opacity-100"
                       )}
                     >
-                      <div className="h-40 rounded-3xl bg-slate-50 border border-black/5 flex items-center justify-center overflow-hidden relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/10 to-transparent" />
-                        <div className="w-24 h-16 bg-white rounded-2xl border border-black/5 flex flex-col p-3 gap-2 shadow-xl">
-                          <div className="w-full h-2.5 bg-black/10 rounded-full" />
-                          <div className="w-2/3 h-2.5 bg-accent-blue/50 rounded-full" />
+                      <div className="h-40 rounded-2xl bg-[#f8fafc] border border-black/5 flex items-center justify-center overflow-hidden relative shadow-inner">
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-50" />
+                        <div className="w-32 h-20 bg-white rounded-2xl border border-black/5 flex flex-col p-4 gap-3 shadow-2xl relative z-10">
+                          <div className="w-full h-3 bg-black/10 rounded-full" />
+                          <div className="w-2/3 h-3 bg-accent-blue/50 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.2)]" />
                         </div>
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                       </div>
-                      <div className="px-2">
-                        <span className="block text-sm font-bold text-slate-900">Premium Light</span>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className={cn("text-[9px] font-black uppercase tracking-widest", theme === 'light' ? "text-accent-blue" : "text-muted")}>
-                            {theme === 'light' ? 'Active' : 'Soft Slate'}
-                          </span>
+                      <div className="px-4">
+                        <div className="flex items-center justify-between">
+                          <span className="block text-base font-black text-primary tracking-tight">CRYSTAL SLATE</span>
+                          <div className={cn("w-4 h-4 rounded-full border-2 transition-all", theme === 'light' ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]" : "border-surface-border")} />
                         </div>
+                        <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-2">Optimal Readability</p>
                       </div>
                     </button>
                   </div>
@@ -376,56 +423,62 @@ export default function SettingsClient({
               {activeTab === 'account' && (
                 <div className="space-y-12">
                   <div className="mb-8">
-                    <h1 className="text-3xl font-black text-primary tracking-tighter">Account Lifecycle</h1>
-                    <p className="text-sm text-secondary mt-2">Data retention and destruction policies.</p>
+                    <h1 className="text-3xl font-black text-primary tracking-tighter uppercase leading-tight">Lifecycle Control</h1>
+                    <p className="text-[13px] text-muted mt-2 font-medium max-w-lg">Manage data persistence and structural termination protocols.</p>
                   </div>
 
                   {deletionDate ? (
-                    <div className="p-8 rounded-[2rem] border border-accent-amber/20 bg-accent-amber/5 space-y-6">
-                      <div className="flex gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-accent-amber/10 flex items-center justify-center shrink-0">
-                          <AlertTriangle className="w-6 h-6 text-accent-amber" />
+                    <div className="p-8 rounded-3xl border border-accent-amber/30 bg-accent-amber/5 space-y-6 shadow-premium relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1.5 bg-accent-amber" />
+                      <div className="flex gap-6">
+                        <div className="w-16 h-16 rounded-[1.5rem] bg-accent-amber/10 flex items-center justify-center shrink-0 border border-accent-amber/20 shadow-sm animate-bounce">
+                          <AlertTriangle className="w-8 h-8 text-accent-amber" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-black text-accent-amber">Deactivation Scheduled</h3>
-                          <p className="text-xs text-secondary leading-relaxed mt-2 max-w-md">
-                            Your account is currently in the 10-day grace period. It will be permanently purged on <strong className="text-primary">{new Date(deletionDate).toLocaleDateString('en-GB')}</strong>. All your data remains recoverable until then.
+                          <h3 className="text-xl font-black text-accent-amber uppercase tracking-tight">Termination Protocol Initialized</h3>
+                          <p className="text-[13px] text-muted leading-relaxed mt-3 max-w-md font-medium">
+                            Your identity is currently in a 10-day terminal grace period. Permanent purging of all transaction history, categories, and credentials will occur on <strong className="text-primary font-black underline underline-offset-4 decoration-accent-amber">{new Date(deletionDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</strong>.
                           </p>
                         </div>
                       </div>
-                      <button onClick={handleRevokeDeletion} disabled={loading} className="h-[44px] px-8 bg-accent-amber text-black font-black uppercase tracking-widest text-[10px] rounded-xl hover:opacity-80 transition-all">
-                        Revoke Deletion
+                      <button onClick={handleRevokeDeletion} disabled={loading} className="h-10 px-8 bg-accent-amber text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-xl hover:opacity-90 transition-all shadow-lg shadow-accent-amber/20 active:scale-95">
+                        Abort Termination
                       </button>
                     </div>
                   ) : (
-                    <div className="p-8 rounded-[2rem] border border-accent-red/10 bg-surface">
-                      <h3 className="text-sm font-black text-accent-red uppercase tracking-widest mb-2">Delete Account</h3>
-                      <p className="text-xs text-muted mb-6 font-medium max-w-md leading-relaxed">
-                        Initiating deletion begins a 10-day grace period. During this time, you can revoke the deletion. After 10 days, your data is permanently purged.
+                    <div className="p-8 rounded-3xl border border-accent-red/20 bg-accent-red/5 shadow-premium relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-red/5 blur-[100px] rounded-full group-hover:bg-accent-red/10 transition-all pointer-events-none" />
+                      
+                      <h3 className="text-sm font-black text-accent-red uppercase tracking-[0.3em] mb-4 flex items-center gap-3">
+                        <Trash2 className="w-5 h-5" /> Critical Data Purge
+                      </h3>
+                      <p className="text-[13px] text-muted mb-10 font-medium max-w-xl leading-relaxed relative z-10">
+                        Initiating account deletion triggers a final 10-day stabilization period. All data blocks, encrypted keys, and financial associations will be permanently eradicated upon completion. This event cannot be reversed once the grace period expires.
                       </p>
                       
-                      <div className="space-y-4 max-w-sm">
-                        <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">Type "{username}" to confirm</label>
-                        <input 
-                          type="text" 
-                          value={deleteConfirm}
-                          onChange={(e) => setDeleteConfirm(e.target.value)}
-                          className="w-full h-[50px] bg-background border border-surface-border rounded-xl px-4 text-sm font-bold text-primary focus:outline-none focus:border-accent-red/50 font-mono tracking-widest"
-                        />
+                      <div className="space-y-4 max-w-sm relative z-10">
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-muted uppercase tracking-[0.25em] ml-1">Verification Required: Type "{username}"</label>
+                          <input 
+                            type="text" 
+                            value={deleteConfirm}
+                            onChange={(e) => setDeleteConfirm(e.target.value)}
+                            placeholder="AUTHORIZE PURGE"
+                            className="w-full h-12 bg-surface border border-accent-red/20 rounded-xl px-5 text-sm font-black text-primary focus:outline-none focus:ring-4 focus:ring-accent-red/10 transition-all font-mono tracking-[0.2em] shadow-inner text-center placeholder:text-muted/30"
+                          />
+                        </div>
                         <button 
                           onClick={handleAccountDeletion}
                           disabled={deleteConfirm !== username || loading}
-                          className="w-full h-[50px] bg-accent-red/10 border border-accent-red/20 text-accent-red font-black uppercase tracking-widest rounded-xl hover:bg-accent-red hover:text-white transition-all disabled:opacity-30 flex items-center justify-center gap-2"
+                          className="w-full h-12 bg-accent-red text-white font-black uppercase tracking-[0.15em] rounded-xl hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-2.5 shadow-lg shadow-accent-red/20 active:scale-95 text-[10px]"
                         >
-                          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Initiate Deletion'}
+                          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Deletion Protocol'}
                         </button>
                       </div>
                     </div>
                   )}
-
                 </div>
               )}
-
             </div>
           </motion.div>
         </AnimatePresence>

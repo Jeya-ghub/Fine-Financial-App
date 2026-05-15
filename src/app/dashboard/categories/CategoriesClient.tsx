@@ -44,19 +44,19 @@ function GhostChip({ categoryId, workspaceId, onAdded }: {
   }
 
   if (editing) return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       <input ref={ref} autoFocus value={value} onChange={e => setValue(e.target.value)}
         onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') setEditing(false) }}
-        className="h-6 px-2 text-[10px] font-bold bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none w-24" />
-      {loading ? <Loader2 className="w-3 h-3 animate-spin text-zinc-500" /> :
-        <button onClick={commit} className="text-emerald-500"><CheckCircle2 className="w-3 h-3" /></button>}
+        className="h-7 px-2.5 text-[11px] font-bold bg-surface-active border border-surface-border rounded-xl text-primary focus:outline-none w-28 shadow-inner" />
+      {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-muted" /> :
+        <button onClick={commit} className="text-accent-emerald hover:scale-110 transition-transform"><CheckCircle2 className="w-3.5 h-3.5" /></button>}
     </div>
   )
 
   return (
     <button onClick={() => setEditing(true)}
-      className="flex items-center gap-1 h-6 px-2 rounded-lg border border-dashed border-white/10 text-zinc-600 hover:text-white hover:border-white/20 transition-all text-[9px] font-black uppercase tracking-widest cursor-pointer select-none">
-      <Plus className="w-2.5 h-2.5" /> Add
+      className="flex items-center gap-1.5 h-7 px-3 rounded-xl border border-dashed border-surface-border text-muted hover:text-primary hover:border-surface-border-hover transition-all text-[10px] font-black uppercase tracking-widest cursor-pointer select-none bg-surface-hover/30">
+      <Plus className="w-3 h-3" /> Add Sub
     </button>
   )
 }
@@ -135,48 +135,48 @@ function CategoryCard({ cat, workspaceId, search, role, onEdit, onDelete, onConf
   }
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(255,255,255,0.04)' }}
-      className="bg-white/[0.02] border border-white/5 rounded-[1.75rem] p-6 group relative flex flex-col gap-4 transition-shadow"
-    >
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -4, scale: 1.01 }}
+        className="bg-surface border border-surface-border rounded-3xl p-6 group relative flex flex-col gap-5 transition-all shadow-premium hover:shadow-elevated"
+      >
       {/* Ghost Actions - always available */}
-      <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-6 right-6 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
         <button onClick={() => onHistory?.(cat.id)}
-          className="w-8 h-8 flex items-center justify-center rounded-xl text-zinc-600 hover:text-white hover:bg-white/5 transition-all"
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-muted hover:text-primary hover:bg-surface-hover border border-transparent hover:border-surface-border transition-all"
           title="History">
-          <History className="w-3.5 h-3.5" />
+          <History className="w-4 h-4" />
         </button>
         <button 
           onClick={() => onEdit(cat)}
           disabled={!canEdit || isDefault}
-          className="w-8 h-8 flex items-center justify-center rounded-xl text-zinc-600 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-muted hover:text-accent-blue hover:bg-accent-blue/10 border border-transparent hover:border-accent-blue/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           title={isDefault ? "System default categories cannot be edited" : "Edit category"}
         >
-          <Edit2 className="w-3.5 h-3.5" />
+          <Edit2 className="w-4 h-4" />
         </button>
         <button 
           onClick={() => onDelete(cat.id)}
           disabled={!canEdit || isDefault}
-          className="w-8 h-8 flex items-center justify-center rounded-xl text-zinc-600 hover:text-red-500 hover:bg-red-500/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-muted hover:text-accent-red hover:bg-accent-red/10 border border-transparent hover:border-accent-red/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           title={isDefault ? "System default categories cannot be deleted" : "Delete category"}
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="flex items-center gap-3 select-none cursor-default">
-        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border shrink-0",
+      <div className="flex items-center gap-4 select-none cursor-default">
+        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 shadow-sm",
           cat.type === 'income'
-            ? 'bg-white border-white/10 text-black shadow-lg shadow-white/5'
-            : 'bg-white/[0.03] border-white/5 text-zinc-500')}>
-          <Tag className="w-4 h-4" />
+            ? 'bg-primary text-background border-primary'
+            : 'bg-surface-hover border-surface-border text-muted')}>
+          <Tag className="w-5 h-5" />
         </div>
         <div>
-          <p className="font-black text-white text-[13px] uppercase tracking-tight leading-tight">{highlight(cat.name)}</p>
-          {cat.is_default && <p className="text-[8px] text-zinc-600 uppercase tracking-[0.2em] font-black mt-0.5">System Default</p>}
+          <p className="font-black text-primary text-base uppercase tracking-tight leading-tight mb-1">{highlight(cat.name)}</p>
+          {cat.is_default && <p className="text-[9px] text-muted uppercase tracking-[0.25em] font-black">System Core Asset</p>}
         </div>
       </div>
 
@@ -193,35 +193,35 @@ function CategoryCard({ cat, workspaceId, search, role, onEdit, onDelete, onConf
                   if (e.key === 'Enter') handleSaveSub(sub.id)
                   if (e.key === 'Escape') setEditingSubId(null)
                 }}
-                className="h-7 px-3 text-[10px] font-black bg-white/[0.05] border border-white/20 rounded-xl text-white focus:outline-none w-32 caret-white uppercase tracking-widest"
+                className="h-7 px-3 text-[10px] font-black bg-surface-active border border-surface-border rounded-xl text-primary focus:outline-none w-32 caret-primary uppercase tracking-widest"
               />
               {savingSubId === sub.id
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-500" />
-                : <button onClick={() => handleSaveSub(sub.id)} className="text-white hover:text-zinc-300 cursor-pointer">
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin text-muted" />
+                : <button onClick={() => handleSaveSub(sub.id)} className="text-primary hover:text-primary/70 cursor-pointer">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 </button>
               }
-              <button onClick={() => setEditingSubId(null)} className="text-zinc-600 hover:text-white cursor-pointer">
+              <button onClick={() => setEditingSubId(null)} className="text-muted hover:text-primary cursor-pointer">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
           ) : (
-            <div key={sub.id} className="group/chip relative flex items-center gap-1 h-7 px-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/15 transition-all select-none cursor-default">
-              <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover/chip:text-white transition-colors">
+            <div key={sub.id} className="group/chip relative flex items-center gap-2 h-8 px-4 rounded-[1.25rem] bg-surface-hover/50 border border-surface-border hover:border-primary/20 hover:bg-surface-hover transition-all select-none cursor-default">
+              <span className="text-[11px] font-black text-muted uppercase tracking-widest group-hover/chip:text-primary transition-colors">
                 {highlight(sub.name)}
               </span>
               {(canEdit && !isDefault) && (
                 <div className="ml-1 flex items-center gap-0.5 opacity-0 group-hover/chip:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleEditSub(sub)}
-                    className="w-4 h-4 flex items-center justify-center text-zinc-600 hover:text-white transition-colors cursor-pointer"
+                    className="w-4 h-4 flex items-center justify-center text-muted hover:text-primary transition-colors cursor-pointer"
                     title="Rename"
                   >
                     <Edit2 className="w-2.5 h-2.5" />
                   </button>
                   <button
                     onClick={() => handleDeleteSub(sub.id)}
-                    className="w-4 h-4 flex items-center justify-center text-zinc-600 hover:text-red-500 transition-colors cursor-pointer"
+                    className="w-4 h-4 flex items-center justify-center text-muted hover:text-red-500 transition-colors cursor-pointer"
                     title="Delete"
                   >
                     {deletingSubId === sub.id
@@ -278,20 +278,21 @@ function CategoryDrawer({ cat, workspaceId, onClose, onSaved }: {
       return
     }
     if (res.error) { setError(res.error); return }
-    onSaved({ ...(cat ?? { id: res.data.id, is_default: false, subcategories: [], version: 1 }), name, type, ...res.data })
+    onSaved(res.data as Category)
     onClose()
   }
 
   const panel = (
     <AnimatePresence>
       <div className="fixed inset-0 z-[99999] flex items-end md:items-stretch md:justify-end">
+        {/* Backdrop */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           onClick={onClose} className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
         {/* Desktop panel */}
         <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="hidden md:flex relative w-[420px] h-full bg-[#0d0d0d] border-l border-white/5 flex-col shadow-2xl">
+          className="hidden md:flex relative w-[420px] h-full bg-surface border-l border-surface-border flex-col shadow-2xl">
           <DrawerForm name={name} setName={setName} type={type} setType={setType} isNew={isNew}
             loading={loading} error={error} onClose={onClose} onSave={handleSave} />
         </motion.div>
@@ -299,7 +300,7 @@ function CategoryDrawer({ cat, workspaceId, onClose, onSaved }: {
         {/* Mobile bottom sheet */}
         <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="md:hidden relative w-full bg-[#0d0d0d] border-t border-white/5 rounded-t-[2.5rem] flex flex-col shadow-2xl">
+          className="md:hidden relative w-full bg-surface border-t border-surface-border rounded-t-[2.5rem] flex flex-col shadow-2xl">
           <DrawerForm name={name} setName={setName} type={type} setType={setType} isNew={isNew}
             loading={loading} error={error} onClose={onClose} onSave={handleSave} />
         </motion.div>
@@ -313,36 +314,37 @@ function CategoryDrawer({ cat, workspaceId, onClose, onSaved }: {
 function DrawerForm({ name, setName, type, setType, isNew, loading, error, onClose, onSave }: any) {
   return (
     <>
-      <div className="md:hidden w-12 h-1.5 bg-white/10 rounded-full mx-auto mt-4 mb-2 shrink-0" />
-      <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 shrink-0">
-        <h3 className="font-bold text-white">{isNew ? 'New Category' : 'Edit Category'}</h3>
-        <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-2"><X className="w-5 h-5" /></button>
+      <div className="md:hidden w-12 h-1.5 bg-surface-border rounded-full mx-auto mt-4 mb-2 shrink-0" />
+      <div className="flex items-center justify-between px-6 py-5 border-b border-surface-border shrink-0">
+        <h3 className="font-black text-[13px] text-primary uppercase tracking-[0.2em]">{isNew ? 'New Category Segment' : 'Modify Segment'}</h3>
+        <button onClick={onClose} className="p-2 bg-surface-hover border border-surface-border rounded-lg text-muted hover:text-primary transition-all active:scale-90"><X className="w-4 h-4" /></button>
       </div>
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
         {isNew && (
-          <div className="flex p-1 bg-white/5 rounded-2xl h-[52px]">
+          <div className="flex gap-4 px-1 py-2">
             {(['expense', 'income'] as const).map(t => (
               <button key={t} onClick={() => setType(t)}
-                className={cn("flex-1 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                  type === t ? 'bg-white text-black' : 'text-zinc-500 hover:text-white')}>
+                className={cn("text-[10px] font-black uppercase tracking-[0.2em] transition-all relative pb-1",
+                  type === t ? 'text-primary' : 'text-muted hover:text-primary/70')}>
                 {t}
+                {type === t && <motion.div layoutId="typeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />}
               </button>
             ))}
           </div>
         )}
-        <div className="space-y-2">
-          <label className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.25em]">Category Name</label>
+        <div className="space-y-1.5">
+          <label className="text-[9px] font-black text-muted uppercase tracking-[0.25em] ml-1">Designation</label>
           <input value={name} onChange={e => setName(e.target.value)} autoFocus
             onKeyDown={e => e.key === 'Enter' && onSave()}
-            className="w-full h-[56px] bg-white/[0.03] border border-white/5 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-white/10"
-            placeholder="e.g. Dining, Freelance..." />
+            className="w-full h-11 bg-surface-hover/30 border border-surface-border rounded-xl px-4 text-sm font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
+            placeholder="e.g. Household, Investments..." />
         </div>
-        {error && <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">{error}</p>}
+        {error && <p className="text-[10px] font-black text-accent-red uppercase tracking-widest bg-accent-red/5 p-3 rounded-lg border border-accent-red/20">{error}</p>}
       </div>
-      <div className="px-8 py-6 border-t border-white/5 shrink-0">
+      <div className="px-6 py-6 border-t border-surface-border shrink-0 bg-surface">
         <button onClick={onSave} disabled={loading || !name.trim()}
-          className="w-full h-[60px] bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all disabled:opacity-30 flex items-center justify-center gap-2">
-          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Save Category</>}
+          className="w-full h-12 bg-primary text-background font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-2.5 shadow-elevated active:scale-[0.98] text-[10px]">
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-5 h-5" /> Commit Segment</>}
         </button>
       </div>
     </>
@@ -432,30 +434,26 @@ export default function CategoriesClient({ initialCategories, workspaceId }: {
   return (
     <div className="flex flex-col min-h-full">
       {/* Sticky Top Bar */}
-      <div className="sticky top-0 z-30 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 px-4 md:px-8 py-4 flex items-center gap-4">
+      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-surface-border px-4 md:px-8 py-4 flex items-center gap-4 shadow-sm">
         <div className="relative flex-1 max-w-sm group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-white transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-focus-within:text-primary transition-colors" />
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search categories & subcategories..."
-            className="w-full h-[44px] bg-white/[0.03] border border-white/5 rounded-2xl pl-11 pr-4 text-xs font-bold text-white placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all" />
-          {search && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500" />}
+            placeholder="Lookup segments..."
+            className="w-full h-10 bg-surface border border-surface-border rounded-xl pl-11 pr-4 text-[13px] font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm" />
         </div>
         <button onClick={openNew}
-          className="h-[44px] px-6 bg-white text-black font-black uppercase tracking-widest rounded-2xl text-xs hover:bg-zinc-200 active:scale-95 transition-all flex items-center gap-2 shrink-0">
-          <Plus className="w-4 h-4" /> Add Category
+          className="h-10 px-6 bg-primary text-background font-black uppercase tracking-widest rounded-xl text-[10px] hover:opacity-90 active:scale-95 transition-all flex items-center gap-2.5 shrink-0 shadow-elevated">
+          <Plus className="w-4 h-4" /> Create Segment
         </button>
       </div>
 
-      <div className="flex-1 px-4 md:px-8 py-8 space-y-12">
+      <div className="flex-1 px-4 md:px-8 py-6 space-y-10">
         {/* ── INCOME ── */}
         <section>
-          <div className="flex items-center gap-4 mb-6 select-none cursor-default">
-            <div className="flex items-center gap-2">
-              <ArrowUpRight className="w-4 h-4 text-white" />
-              <h2 className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Income</h2>
-            </div>
-            <div className="h-px flex-1 bg-white/5" />
-            <span className="text-[9px] font-black text-zinc-800 uppercase tracking-widest">{incomeCategories.length} Categories</span>
+          <div className="flex items-center gap-4 mb-8 select-none cursor-default">
+            <h2 className="text-[12px] font-black text-primary uppercase tracking-[0.4em]">Inflow Streams</h2>
+            <div className="h-px flex-1 bg-surface-border/50" />
+            <span className="text-[9px] font-black text-muted uppercase tracking-widest">{incomeCategories.length} Categories</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <AnimatePresence mode="popLayout">
@@ -478,13 +476,10 @@ export default function CategoriesClient({ initialCategories, workspaceId }: {
 
         {/* ── EXPENSE ── */}
         <section>
-          <div className="flex items-center gap-4 mb-6 select-none cursor-default">
-            <div className="flex items-center gap-2">
-              <ArrowDownRight className="w-4 h-4 text-zinc-500" />
-              <h2 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em]">Expense</h2>
-            </div>
-            <div className="h-px flex-1 bg-white/5" />
-            <span className="text-[9px] font-black text-zinc-800 uppercase tracking-widest">{expenseCategories.length} Categories</span>
+          <div className="flex items-center gap-4 mb-8 select-none cursor-default">
+            <h2 className="text-[12px] font-black text-primary uppercase tracking-[0.4em]">Outflow Targets</h2>
+            <div className="h-px flex-1 bg-surface-border/50" />
+            <span className="text-[9px] font-black text-muted uppercase tracking-widest">{expenseCategories.length} Categories</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <AnimatePresence mode="popLayout">
@@ -521,11 +516,11 @@ export default function CategoriesClient({ initialCategories, workspaceId }: {
         {timelineIds && (
           <div className="fixed inset-0 z-[100000] flex justify-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setTimelineIds(null)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+              onClick={() => setTimelineIds(null)} className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
             <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="relative w-full max-w-md h-full bg-[#0d0d0d] border-l border-white/5 p-8 overflow-y-auto">
-              <button onClick={() => setTimelineIds(null)} className="absolute top-8 right-8 text-zinc-500 hover:text-white p-2">
+              className="relative w-full max-w-md h-full bg-surface border-l border-surface-border p-10 overflow-y-auto shadow-2xl">
+              <button onClick={() => setTimelineIds(null)} className="absolute top-10 right-10 p-3 bg-surface-hover border border-surface-border rounded-2xl text-muted hover:text-primary transition-all active:scale-90 shadow-sm">
                 <X className="w-5 h-5" />
               </button>
               <CategoryTimeline workspaceId={workspaceId} recordIds={timelineIds} onRestoreComplete={() => { refresh(); setTimelineIds(null) }} />

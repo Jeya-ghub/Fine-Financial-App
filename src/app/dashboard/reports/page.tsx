@@ -5,14 +5,11 @@ import { motion } from 'framer-motion'
 import { useDashboardContext } from '@/components/providers/DashboardProvider'
 import { useReports } from '@/hooks/useReports'
 import { ReportFilters } from '@/components/reports/ReportFilters'
-import { SummaryCards } from '@/components/reports/SummaryCards'
-import { TrendChart, DistributionChart } from '@/components/reports/ReportCharts'
+import { TrendChart } from '@/components/reports/ReportCharts'
 import { BudgetProgress } from '@/components/reports/BudgetProgress'
-import { AIInsights } from '@/components/reports/AIInsights'
+import { CategoryHeatmap } from '@/components/reports/CategoryHeatmap'
 import { reportsService } from '@/services/reports.service'
-import { Loader2, AlertCircle, ArrowRight } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
+import { Loader2, AlertCircle, PieChart as ChartIcon } from 'lucide-react'
 
 export default function ReportsPage() {
   const { workspaceId } = useDashboardContext()
@@ -23,34 +20,43 @@ export default function ReportsPage() {
 
   if (isLoading && !data) {
     return (
-      <div className="h-[60vh] flex flex-col items-center justify-center text-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-4" />
-        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Generating financial analytics...</p>
+      <div className="h-[70vh] flex flex-col items-center justify-center text-center">
+        <div className="relative mb-6">
+          <div className="w-16 h-16 border-4 border-accent-blue/10 rounded-full" />
+          <Loader2 className="w-16 h-16 text-accent-blue animate-spin absolute inset-0" />
+        </div>
+        <h3 className="text-sm font-black text-primary uppercase tracking-[0.3em] mb-2">Synthesizing Intelligence</h3>
+        <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Aggregating workspace telemetry...</p>
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="h-[60vh] flex flex-col items-center justify-center text-center">
-        <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 mb-4">
-          <AlertCircle className="w-6 h-6" />
+      <div className="h-[70vh] flex flex-col items-center justify-center text-center">
+        <div className="w-16 h-16 rounded-[2rem] bg-accent-red/10 flex items-center justify-center text-accent-red mb-6 border border-accent-red/20 shadow-lg">
+          <AlertCircle className="w-8 h-8" />
         </div>
-        <h3 className="text-sm font-black text-white uppercase tracking-widest mb-2">Failed to load reports</h3>
-        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Check your connection and try again</p>
+        <h3 className="text-sm font-black text-primary uppercase tracking-widest mb-2">Analysis Interrupted</h3>
+        <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Unable to synchronize with high-fidelity records</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-700">
+    <div className="space-y-10 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       {/* Header & Global Filters */}
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-black text-white tracking-tight uppercase">Financial Reports</h1>
-          <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mt-1">
-            Deep insights into your workspace performance
-          </p>
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-accent-blue/10 rounded-2xl border border-accent-blue/20">
+            <ChartIcon className="w-6 h-6 text-accent-blue" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-primary tracking-tight uppercase">Financial Intelligence</h1>
+            <p className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] mt-1.5">
+              Deep-cycle spending analysis & categorical heatmaps
+            </p>
+          </div>
         </div>
 
         <ReportFilters 
@@ -62,76 +68,47 @@ export default function ReportsPage() {
       </div>
 
       {data && (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          {/* Summary Row */}
-          <div className="col-span-1 md:col-span-12">
-            <SummaryCards summary={data.summary} />
-          </div>
-
-          {/* Main Analytics Row */}
-          <div className="col-span-1 md:col-span-8 space-y-6">
-            <TrendChart data={data.chartData} />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <DistributionChart data={data.categories} />
-               <BudgetProgress budgets={data.budgets} />
+        <div className="grid grid-cols-1 gap-10">
+          {/* Hero Visual: Trend Chart */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full"
+          >
+            <div className="bg-surface border border-surface-border rounded-[2.5rem] p-8 shadow-premium overflow-hidden transition-colors">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-sm font-black text-primary uppercase tracking-[0.3em]">Temporal Trajectory</h3>
+                  <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-1.5">Income vs Outflow Velocity</p>
+                </div>
+              </div>
+              <div className="h-[400px]">
+                <TrendChart data={data.chartData} />
+              </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Sidebar Insights */}
-          <div className="col-span-1 md:col-span-4 h-full">
-            <AIInsights summary={data.summary} />
-          </div>
+          {/* Core Analytics Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* Category Intensity Heatmap */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="lg:col-span-8"
+            >
+              <CategoryHeatmap data={data.categories} />
+            </motion.div>
 
-          {/* Detailed Transactions List */}
-          <div className="col-span-1 md:col-span-12">
-            <Card>
-              <CardContent className="p-0">
-                <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xs font-black text-white uppercase tracking-widest">Transaction Details</h3>
-                    <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-0.5">Raw data for active period</p>
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-white/[0.02]">
-                        <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-widest">Date</th>
-                        <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-widest">Description</th>
-                        <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-widest">Category</th>
-                        <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-widest">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {data.transactions.map((tx) => (
-                        <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors group">
-                          <td className="px-6 py-4 text-[10px] font-bold text-white/40">{tx.date}</td>
-                          <td className="px-6 py-4 text-[11px] font-black text-white">{tx.description}</td>
-                          <td className="px-6 py-4">
-                            <Badge variant="neutral" className="h-5 text-[8px] font-black uppercase tracking-widest">
-                              {tx.categories?.name || 'Uncategorized'}
-                            </Badge>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className={`text-xs font-black ${tx.type === 'income' ? 'text-emerald-500' : 'text-white'}`}>
-                              {tx.type === 'income' ? '+' : '-'} ₹{tx.amount.toLocaleString()}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                      {data.transactions.length === 0 && (
-                        <tr>
-                          <td colSpan={4} className="px-6 py-20 text-center text-[10px] font-black text-white/20 uppercase tracking-widest italic">
-                            No transactions found for this period
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Budget Progress Matrix */}
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="lg:col-span-4"
+            >
+              <BudgetProgress budgets={data.budgets} />
+            </motion.div>
           </div>
         </div>
       )}

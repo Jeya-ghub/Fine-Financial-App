@@ -2,16 +2,16 @@
 
 import React, { createContext, useContext, useEffect, useReducer, useCallback, useRef } from 'react'
 import { createTransaction, updateTransaction, deleteTransaction } from '@/app/actions/transactions'
+import { Transaction, CreateTransactionData, UpdateTransactionData } from '@/types/transaction.types'
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
-export type Transaction = any
 export type OperationStatus = 'pending' | 'processing' | 'failed' | 'success' | 'conflict'
 
 export type Operation = {
   id: string
   type: 'CREATE' | 'UPDATE' | 'DELETE'
   txId: string
-  payload?: any
+  payload?: any // Keeping payload as any for flexibility in reducer, but could be CreateTransactionData | UpdateTransactionData
   status: OperationStatus
   retryCount: number
   createdAt: number

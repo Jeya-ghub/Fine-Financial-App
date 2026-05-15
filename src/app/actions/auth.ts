@@ -4,7 +4,7 @@ import { cache } from 'react'
 import { storeSecureOtp, verifySecureOtp } from '@/lib/redis/otp'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/redis/rate-limit'
-import { resend } from '@/lib/resend'
+import { mailer } from '@/lib/mailer'
 import { randomInt } from 'node:crypto'
 import { headers } from 'next/headers'
 
@@ -27,11 +27,11 @@ export async function sendOtp(rawEmail: string) {
   // ALWAYS Log OTP for developer bypass in terminal
   console.log(`[Auth] OTP for ${email}: ${otp}`)
 
-  // 4. Send Email via Resend
+  // 4. Send Email via Brevo SMTP
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'Fine Finance <onboarding@resend.dev>', // You can change this to your verified domain later
-      to: [email],
+    await mailer.sendMail({
+      from: `"Fine Finance" <${process.env.SMTP_FROM}>`,
+      to: email,
       subject: `Your Verification Code: ${otp}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #0a0a0a; color: white; border-radius: 24px;">
@@ -51,19 +51,10 @@ export async function sendOtp(rawEmail: string) {
         </div>
       `,
     })
-
-    if (error) {
-      console.error('[Auth] Resend Sending Error:', JSON.stringify(error, null, 2))
-      const details = (error as any).message || (error as any).name || JSON.stringify(error)
-      return { 
-        error: `EMAIL_SEND_FAILED: ${details}. --- [DEV TIP]: Check your server terminal/console for the verification code! I have logged it there for you.` 
-      }
-    }
-
     return { success: true }
-  } catch (err) {
-    console.error('Mail Error:', err)
-    return { error: 'An unexpected error occurred while sending the email.' }
+  } catch (err: any) {
+    console.error('[Auth] Mail Error:', err)
+    return { error: `EMAIL_SEND_FAILED: ${err.message}.` }
   }
 }
 
@@ -93,6 +84,7 @@ export async function verifyOtp(rawEmail: string, rawToken: string) {
     type: 'magiclink',
     email,
   })
+  console.log(`[Auth] Link data:`, !!linkData, `Error:`, linkError?.message)
 
   // If user doesn't exist, create them and try again
   if (linkError?.message?.includes('User not found')) {
@@ -152,7 +144,8 @@ export async function verifyOtp(rawEmail: string, rawToken: string) {
 
   // 4. Record Real Session Metadata
   if (data.user) {
-    await recordSession(data.user.id)
+    // We don't await this to keep the login fast, and use a timeout internally
+    recordSession(data.user.id).catch(e => console.error('[Auth] Background session recording failed', e))
   }
 
   return { success: true, session: data.session }
@@ -173,16 +166,35 @@ async function recordSession(userId: string) {
     let location = 'Local Environment'
     if (ip !== '127.0.0.1' && ip !== '::1') {
       try {
-        const geoRes = await fetch(`https://ipapi.co/${ip}/json/`).then(r => r.json())
+        // Use a 5-second timeout for the geolocation lookup
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000)
+        
+        const geoRes = await fetch(`https://ipapi.co/${ip}/json/`, { 
+          signal: controller.signal 
+        }).then(r => r.json())
+        
+        clearTimeout(timeoutId)
+        
         if (geoRes.city) {
           location = `${geoRes.city}, ${geoRes.country_code}`
         }
       } catch (e) {
-        console.warn('[Auth] Geo lookup failed', e)
+        console.warn('[Auth] Geo lookup failed or timed out', e)
       }
     }
 
     const admin = await createAdminClient()
+    
+    // Senior Level Technique: Deduplicate sessions for the same device/browser signature
+    // This prevents the "multiple sessions" clutter shown in the UI
+    await admin.from('user_sessions')
+      .delete()
+      .eq('user_id', userId)
+      .eq('device', device)
+      .eq('browser', browser)
+      .eq('os', os)
+
     await admin.from('user_sessions').insert({
       user_id: userId,
       device,
@@ -287,13 +299,33 @@ export async function getActiveSessions() {
   const currentIp = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
   const currentUa = head.get('user-agent') || ''
 
+  // Correcting the "Current Session" logic to ensure ONLY ONE is marked
+  let currentMarked = false
+  const processedSessions = (dbSessions || []).map((s, idx) => {
+    const isIpMatch = s.ip === currentIp
+    const isBrowserMatch = currentUa.includes(s.browser)
+    
+    // Heuristic: Most recent session that matches IP and Browser
+    let isCurrent = false
+    if (!currentMarked && isIpMatch && isBrowserMatch) {
+      isCurrent = true
+      currentMarked = true
+    }
+
+    return {
+      ...s,
+      isCurrent
+    }
+  })
+
+  // Final Fallback: If none matched the heuristic, mark the very first one as current
+  if (!currentMarked && processedSessions.length > 0) {
+    processedSessions[0].isCurrent = true
+  }
+
   return {
     success: true,
-    data: (dbSessions || []).map((s, idx) => ({
-      ...s,
-      // Heuristic for "Current" session: same IP and first in list (or same IP/UA)
-      isCurrent: idx === 0 || (s.ip === currentIp && currentUa.includes(s.browser))
-    }))
+    data: processedSessions
   }
 }
 
@@ -304,6 +336,32 @@ export async function terminateSession(sessionId: string) {
     .delete()
     .eq('id', sessionId)
   
+  return { success: !error }
+}
+
+export async function terminateAllOtherSessions() {
+  const user = await getUser()
+  if (!user) return { success: false }
+
+  const admin = await createAdminClient()
+  
+  // Get the most recent session ID to keep it as "current"
+  const { data: latest } = await admin
+    .from('user_sessions')
+    .select('id')
+    .eq('user_id', user.id)
+    .order('last_active', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (!latest) return { success: true }
+
+  const { error } = await admin
+    .from('user_sessions')
+    .delete()
+    .eq('user_id', user.id)
+    .neq('id', latest.id)
+
   return { success: !error }
 }
 
@@ -323,5 +381,18 @@ export async function revokeAccountDeletion() {
     data: { deletion_scheduled_at: null }
   })
   if (error) return { error: error.message }
+  return { success: true }
+}
+
+export async function resetPassword(password: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({
+    password: password
+  })
+  
+  if (error) {
+    return { error: error.message }
+  }
+  
   return { success: true }
 }

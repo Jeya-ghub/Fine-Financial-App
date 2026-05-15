@@ -29,7 +29,7 @@ export default async function DashboardLayout({
     // This should ideally not happen after the onboarding fix, 
     // but we'll show a fallback or redirect to a creation page if it does.
     return (
-      <div className="flex h-screen bg-[#0a0a0a] items-center justify-center text-white">
+      <div className="flex h-screen bg-zinc-50 dark:bg-[#0a0a0a] items-center justify-center text-zinc-900 dark:text-white">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold">No Workspace Found</h1>
           <p className="text-zinc-500">Please contact support or try logging in again.</p>
@@ -46,12 +46,8 @@ export default async function DashboardLayout({
 
   return (
     <DashboardProvider workspaceId={activeWorkspace.id}>
-      <div className="flex h-screen bg-[#0a0a0a] overflow-hidden text-white font-sans">
-        <Sidebar 
-          workspaces={workspaces} 
-          activeWorkspaceId={activeWorkspace.id} 
-          userEmail={user.email || ''} 
-        />
+      <div className="flex h-screen bg-background overflow-hidden text-primary font-sans">
+        <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <DashboardHeader 
             userEmail={user.email || ''} 
@@ -60,8 +56,8 @@ export default async function DashboardLayout({
             workspaces={workspaces}
           />
           <main className="flex-1 overflow-y-auto custom-scrollbar">
-            <div className="p-4 md:p-6 lg:p-8">
-              <Suspense fallback={<div className="animate-pulse bg-white/5 h-full w-full rounded-3xl" />}>
+            <div className="p-4 md:p-6 lg:p-8 max-w-screen-2xl mx-auto w-full">
+              <Suspense fallback={<div className="animate-pulse bg-surface h-full w-full rounded-2xl" />}>
                 {children}
               </Suspense>
             </div>

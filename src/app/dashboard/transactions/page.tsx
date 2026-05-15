@@ -25,7 +25,7 @@ export default async function TransactionsPage() {
   const txs = (transactions || []).map(t => ({ ...t, amount: Number(t.amount) }))
 
   return (
-    <div className="h-full bg-[#0a0a0a] flex flex-col">
+    <div className="h-full bg-background flex flex-col">
       <TransactionsProvider initialData={txs as any} workspaceId={activeWorkspace.id}>
         <TransactionsClient
           categories={(categories as any) || []}

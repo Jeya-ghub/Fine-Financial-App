@@ -146,27 +146,27 @@ export default function WorkspaceDetailClient({
   ]
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0a]">
+    <div className="flex flex-col h-full bg-background">
       {/* ── Top Action Bar ── */}
-      <div className="sticky top-0 z-30 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-surface-border px-4 md:px-8 py-6 flex items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => router.push('/dashboard/workspace')}
-            className="p-2.5 bg-white/5 hover:bg-white/10 transition-colors rounded-xl border border-white/10"
+            className="p-3 bg-surface border border-surface-border rounded-2xl text-muted hover:text-primary hover:bg-surface-hover transition-all active:scale-90 shadow-sm"
           >
-            <ArrowLeft className="w-5 h-5 text-zinc-400" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-black text-white tracking-tight">{workspace.name}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-black text-primary tracking-tight leading-tight">{workspace.name}</h1>
               <span className={cn(
-                "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border",
-                workspace.type === 'private' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                "text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-xl border shadow-sm",
+                workspace.type === 'private' ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20" : "bg-accent-blue/10 text-accent-blue border-accent-blue/20"
               )}>
-                {workspace.type === 'private' ? 'Private' : 'Shared'}
+                {workspace.type === 'private' ? 'Confidential' : 'Collaborative'}
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">Workspace Settings</p>
+            <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-1">Workspace Security & Governance</p>
           </div>
         </div>
 
@@ -174,9 +174,9 @@ export default function WorkspaceDetailClient({
           {currentUserRole === 'owner' && workspace.type !== 'private' && (
             <button 
               onClick={() => setIsInviteOpen(true)} 
-              className="h-[44px] px-6 bg-white text-black font-black uppercase tracking-widest rounded-xl text-[10px] hover:bg-zinc-200 transition-all flex items-center gap-2"
+              className="h-[48px] px-8 bg-primary text-background font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-elevated"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
               <span className="hidden md:inline">Invite Member</span>
             </button>
           )}
@@ -185,93 +185,93 @@ export default function WorkspaceDetailClient({
 
       <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
         {/* ── Member Management Table ── */}
-        <div className="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden">
-          <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+        <div className="bg-surface border border-surface-border rounded-[2.5rem] overflow-hidden shadow-premium">
+          <div className="px-10 py-8 border-b border-surface-border flex items-center justify-between bg-surface-hover/30">
             <div>
-              <h3 className="text-sm font-black text-white uppercase tracking-widest">Team Access</h3>
-              <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Manage Roles & Permissions</p>
+              <h3 className="text-sm font-black text-primary uppercase tracking-[0.3em]">Operational Team</h3>
+              <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-1.5">Access Matrix & Authentication Status</p>
             </div>
           </div>
           
           {workspace.type === 'private' ? (
-            <div className="p-12 text-center border-t border-white/5">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
-                <Shield className="w-8 h-8 text-emerald-500" />
+            <div className="p-16 text-center border-t border-surface-border bg-surface-hover/10">
+              <div className="w-20 h-20 rounded-[2rem] bg-accent-emerald/10 flex items-center justify-center mx-auto mb-8 border border-accent-emerald/20 shadow-sm">
+                <Shield className="w-10 h-10 text-accent-emerald" />
               </div>
-              <h4 className="text-lg font-black text-white tracking-tight mb-2">Isolated Environment</h4>
-              <p className="text-sm text-zinc-500 font-medium max-w-md mx-auto leading-relaxed">
-                This is your permanent financial safe zone. Sharing and member invitations are permanently disabled for this environment.
+              <h4 className="text-xl font-black text-primary tracking-tight mb-3 uppercase">Isolated Protocol Active</h4>
+              <p className="text-[13px] text-muted font-medium max-w-md mx-auto leading-relaxed">
+                This environment is strictly isolated. External collaboration and member invitations are permanently locked by system policy.
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/5 bg-white/[0.02]">
-                    <th className="px-8 py-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest">User</th>
-                    <th className="px-6 py-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest">Status</th>
-                    <th className="px-6 py-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest">Role</th>
-                    <th className="px-6 py-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest">Joined</th>
-                    <th className="px-8 py-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest text-right">Actions</th>
+                  <tr className="border-b border-surface-border bg-surface-hover/50">
+                    <th className="px-10 py-5 text-[10px] font-black text-muted uppercase tracking-[0.25em]">Principal</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-muted uppercase tracking-[0.25em]">Authorization</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-muted uppercase tracking-[0.25em]">Security Role</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-muted uppercase tracking-[0.25em]">Onboarded</th>
+                    <th className="px-10 py-5 text-[10px] font-black text-muted uppercase tracking-[0.25em] text-right">Operations</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.02]">
+                <tbody className="divide-y divide-surface-border">
                   {allUsers.map((m: any) => (
-                    <tr key={m.id} className="hover:bg-white/[0.02] transition-colors group">
-                      <td className="px-8 py-4">
-                        <div className="flex items-center gap-4">
+                    <tr key={m.id} className="hover:bg-surface-hover/30 transition-all group">
+                      <td className="px-10 py-6">
+                        <div className="flex items-center gap-5">
                           <div className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center text-xs font-black border",
+                            "w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black border shadow-sm",
                             m.status === 'active' 
-                              ? "bg-gradient-to-br from-zinc-800 to-zinc-900 border-white/10 text-white" 
-                              : "bg-amber-500/10 border-amber-500/20 text-amber-500"
+                              ? "bg-surface border-surface-border text-primary" 
+                              : "bg-accent-amber/10 border-accent-amber/20 text-accent-amber"
                           )}>
                             {(m.email || 'U').charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-white">{m.email || m.user_id}</p>
+                            <p className="text-[14px] font-bold text-primary">{m.email || m.user_id}</p>
                             {m.user_id === workspace.created_by && (
-                              <span className="text-[9px] text-blue-500 font-black uppercase tracking-widest">Creator</span>
+                              <span className="text-[9px] text-accent-blue font-black uppercase tracking-[0.2em] mt-1 block">Founding Architect</span>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6">
                         {m.status === 'active' ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                            <CheckCircle2 className="w-3 h-3" /> Active
+                          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 shadow-sm">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Validated
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-                            <Clock className="w-3 h-3" /> Pending
+                          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-accent-amber/10 text-accent-amber border border-accent-amber/20 shadow-sm">
+                            <Clock className="w-3.5 h-3.5" /> Pending Auth
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6">
                         <span className={cn(
-                          "text-[10px] font-black uppercase tracking-widest",
-                          m.role === 'owner' ? "text-blue-500" : "text-zinc-500"
+                          "text-[11px] font-black uppercase tracking-[0.15em]",
+                          m.role === 'owner' ? "text-accent-blue" : "text-muted"
                         )}>
                           {m.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-xs font-bold text-zinc-600">
-                        {new Date(m.created_at).toLocaleDateString('en-GB')}
+                      <td className="px-8 py-6 text-[12px] font-bold text-muted">
+                        {new Date(m.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </td>
-                      <td className="px-8 py-4 text-right">
+                      <td className="px-10 py-6 text-right">
                         {currentUserRole === 'owner' && m.role !== 'owner' ? (
-                          <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-6 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                             {m.status === 'active' && (
-                              <button onClick={() => handleStartTransfer(m.user_id)} className="text-[10px] font-black text-zinc-500 hover:text-blue-500 uppercase tracking-widest transition-colors flex items-center gap-1.5">
-                                <Key className="w-3 h-3" /> Transfer
+                              <button onClick={() => handleStartTransfer(m.user_id)} className="text-[10px] font-black text-muted hover:text-accent-blue uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
+                                <Key className="w-4 h-4" /> Transfer
                               </button>
                             )}
-                            <button onClick={() => m.status === 'active' ? handleRevoke(m.user_id) : alert('Need backend to revoke pending invite')} className="text-[10px] font-black text-zinc-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-1.5">
-                              <X className="w-3 h-3" /> Revoke
+                            <button onClick={() => m.status === 'active' ? handleRevoke(m.user_id) : alert('Need backend to revoke pending invite')} className="text-[10px] font-black text-muted hover:text-accent-red uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
+                                <X className="w-4 h-4" /> Revoke
                             </button>
                           </div>
                         ) : (
-                          <span className="text-[10px] font-bold text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity">—</span>
+                          <span className="text-[10px] font-bold text-surface-border">—</span>
                         )}
                       </td>
                     </tr>
@@ -283,31 +283,31 @@ export default function WorkspaceDetailClient({
         </div>
 
         {/* ── Danger Zone ── */}
-        <div className="p-8 rounded-[2.5rem] border border-red-500/10 bg-gradient-to-br from-red-500/5 to-transparent relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/5 blur-[120px] rounded-full group-hover:bg-red-500/10 transition-all pointer-events-none" />
-          <h3 className="text-sm font-black text-red-500 uppercase tracking-widest flex items-center gap-2 mb-3 relative z-10">
-            <ShieldAlert className="w-4 h-4" /> Danger Zone
+        <div className="p-10 rounded-[3rem] border border-accent-red/20 bg-accent-red/5 relative overflow-hidden group shadow-premium">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-red/5 blur-[120px] rounded-full group-hover:bg-accent-red/10 transition-all pointer-events-none" />
+          <h3 className="text-sm font-black text-accent-red uppercase tracking-[0.3em] flex items-center gap-3 mb-4 relative z-10">
+            <ShieldAlert className="w-5 h-5" /> Critical Governance Zone
           </h3>
-          <p className="text-xs text-zinc-400 mb-8 font-medium max-w-2xl leading-relaxed relative z-10">
+          <p className="text-[13px] text-muted mb-10 font-medium max-w-2xl leading-relaxed relative z-10">
             {currentUserRole === 'owner' 
-              ? "Deleting a workspace permanently destroys all associated transactions, categories, and member access. This action cannot be undone and will forcefully disconnect all active users." 
-              : "Leaving a workspace revokes your access instantly. You will no longer be able to view or edit transactions in this environment."}
+              ? "Termination of a workspace is an irreversible event. All financial records, custom segments, and access protocols will be permanently destroyed. This action will immediately disconnect all authorized agents." 
+              : "Exiting this workspace will immediately revoke your access credentials. Re-onboarding will require a new secure invitation from the primary architect."}
           </p>
           
           <div className="flex gap-4 relative z-10">
             {currentUserRole === 'owner' ? (
               <button 
                 onClick={() => setIsDeleteModalOpen(true)}
-                className="h-[44px] px-8 bg-red-500/10 border border-red-500/20 text-red-500 font-black uppercase tracking-widest rounded-xl text-[10px] hover:bg-red-500 hover:text-white transition-all flex items-center gap-2"
+                className="h-[48px] px-8 bg-accent-red text-white font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-lg shadow-accent-red/20 active:scale-95"
               >
-                <Trash2 className="w-4 h-4" /> Delete Workspace
+                <Trash2 className="w-4 h-4" /> Terminate Workspace
               </button>
             ) : (
               <button 
                 onClick={() => setIsLeaveModalOpen(true)}
-                className="h-[44px] px-8 bg-red-500/10 border border-red-500/20 text-red-500 font-black uppercase tracking-widest rounded-xl text-[10px] hover:bg-red-500 hover:text-white transition-all flex items-center gap-2"
+                className="h-[48px] px-8 bg-accent-red text-white font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-lg shadow-accent-red/20 active:scale-95"
               >
-                <LogOut className="w-4 h-4" /> Leave Workspace
+                <LogOut className="w-4 h-4" /> Exit Environment
               </button>
             )}
           </div>
@@ -321,55 +321,57 @@ export default function WorkspaceDetailClient({
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsInviteOpen(false)}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" 
             />
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[400px] bg-[#0a0a0a] border-l border-white/10 z-50 flex flex-col shadow-2xl"
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="fixed top-0 right-0 h-full w-full md:w-[420px] bg-surface border-l border-surface-border z-50 flex flex-col shadow-2xl"
             >
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <div className="px-10 py-8 border-b border-surface-border flex items-center justify-between shrink-0">
                 <div>
-                  <h2 className="text-lg font-black text-white uppercase tracking-tight">Invite Member</h2>
-                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Provide Access</p>
+                  <h2 className="text-xl font-black text-primary uppercase tracking-tight">Invite Member</h2>
+                  <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-1.5">Grant Environment Access</p>
                 </div>
-                <button onClick={() => setIsInviteOpen(false)} className="p-2 text-zinc-500 hover:text-white transition-colors">
-                  <X className="w-5 h-5" />
+                <button onClick={() => setIsInviteOpen(false)} className="p-3 bg-surface-hover border border-surface-border rounded-2xl text-muted hover:text-primary transition-all active:scale-90">
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="flex-1 p-8">
+              <div className="flex-1 p-10 overflow-y-auto">
                 {inviteSuccess ? (
                   <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="h-full flex flex-col items-center justify-center text-center">
-                    <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 border border-emerald-500/20">
-                      <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+                    <div className="w-24 h-24 bg-accent-emerald/10 rounded-[2.5rem] flex items-center justify-center mb-8 border border-accent-emerald/20 shadow-sm">
+                      <CheckCircle2 className="w-12 h-12 text-accent-emerald" />
                     </div>
-                    <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">Invite Dispatched</h3>
-                    <p className="text-xs text-zinc-500 font-medium leading-relaxed">
-                      A secure token has been sent to the email address. They will appear as "Pending" until they accept.
+                    <h3 className="text-2xl font-black text-primary uppercase tracking-tight mb-3">Invite Dispatched</h3>
+                    <p className="text-[13px] text-muted font-medium leading-relaxed max-w-[280px]">
+                      A secure authentication token has been generated and sent to the recipient.
                     </p>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleInvite} className="space-y-8">
+                  <form onSubmit={handleInvite} className="space-y-10">
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">Email Address</label>
                       <input 
                         type="email"
                         value={inviteEmail} 
                         onChange={(e) => setInviteEmail(e.target.value)} 
-                        placeholder="colleague@example.com" 
-                        className="w-full h-[60px] bg-white/[0.02] border border-white/5 rounded-2xl px-6 text-sm font-bold text-white focus:outline-none focus:border-emerald-500/50 transition-all" 
+                        placeholder="collaborator@enterprise.com" 
+                        className="w-full h-[64px] bg-surface-hover/30 border border-surface-border rounded-2xl px-6 text-base font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm" 
                         required 
                       />
                     </div>
-                    <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5 flex gap-4">
-                      <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                      <p className="text-[11px] text-zinc-400 font-medium leading-relaxed">
-                        The invited user will undergo a Redis-OTP verification flow. Upon success, they will be granted "Member" access.
+                    <div className="bg-accent-blue/5 border border-accent-blue/10 rounded-[2rem] p-6 flex gap-5">
+                      <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center shrink-0">
+                        <Info className="w-5 h-5 text-accent-blue" />
+                      </div>
+                      <p className="text-[12px] text-muted font-medium leading-relaxed">
+                        Security Notice: Recipients must complete high-entropy OTP verification to validate their identity before access is granted.
                       </p>
                     </div>
-                    <button type="submit" disabled={loading || !inviteEmail} className="w-full h-[60px] bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 transition-all disabled:opacity-30 flex items-center justify-center gap-2">
-                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-4 h-4" /> Send Secure Invite</>}
+                    <button type="submit" disabled={loading || !inviteEmail} className="w-full h-[64px] bg-primary text-background font-black uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated">
+                      {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Send className="w-5 h-5" /> Dispatch Access Invite</>}
                     </button>
                   </form>
                 )}
@@ -384,39 +386,41 @@ export default function WorkspaceDetailClient({
         {isLeaveModalOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-[#0d0d0d] border border-red-500/20 rounded-[2.5rem] p-8 shadow-2xl"
+              className="w-full max-w-md bg-surface border border-accent-red/20 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
             >
-              <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/20 mx-auto">
-                <LogOut className="w-6 h-6 text-red-500" />
+              <div className="absolute top-0 left-0 w-full h-2 bg-accent-red" />
+              
+              <div className="w-20 h-20 bg-accent-red/10 rounded-[2rem] flex items-center justify-center mb-8 border border-accent-red/20 mx-auto shadow-sm">
+                <LogOut className="w-10 h-10 text-accent-red" />
               </div>
-              <h2 className="text-xl font-black text-white text-center uppercase tracking-tight mb-2">Leave Workspace?</h2>
-              <p className="text-xs text-zinc-500 text-center mb-8 leading-relaxed">
-                This action is irreversible. To confirm your exit, type <strong className="text-white font-mono tracking-widest px-1">"{workspace.name}"</strong> below.
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Terminate Access?</h2>
+              <p className="text-[13px] text-muted text-center mb-10 leading-relaxed font-medium">
+                This action is permanent. To authorize your exit from this environment, type <strong className="text-primary font-mono tracking-widest bg-surface-hover px-2 py-1 rounded">"{workspace.name}"</strong> below.
               </p>
               
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <input 
                   type="text" 
                   value={leaveConfirmName} 
                   onChange={(e) => setLeaveConfirmName(e.target.value)} 
                   placeholder={workspace.name} 
-                  className="w-full h-[60px] bg-white/[0.02] border border-white/5 rounded-2xl px-6 text-sm font-bold text-center text-white focus:outline-none focus:border-red-500/50 transition-all font-mono tracking-widest" 
+                  className="w-full h-[64px] bg-surface-hover/50 border border-surface-border rounded-2xl px-6 text-base font-bold text-center text-primary focus:outline-none focus:ring-4 focus:ring-accent-red/10 transition-all font-mono tracking-widest shadow-inner" 
                 />
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => { setIsLeaveModalOpen(false); setLeaveConfirmName(''); }} className="h-[50px] rounded-xl text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">
-                    Cancel
+                  <button onClick={() => { setIsLeaveModalOpen(false); setLeaveConfirmName(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover">
+                    Abort
                   </button>
                   <button 
                     onClick={handleLeave}
                     disabled={loading || leaveConfirmName !== workspace.name}
-                    className="h-[50px] bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-colors disabled:opacity-30 flex items-center justify-center gap-2"
+                    className="h-[64px] bg-accent-red text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-lg shadow-accent-red/20"
                   >
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Leave'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm Exit'}
                   </button>
                 </div>
               </div>
@@ -430,39 +434,41 @@ export default function WorkspaceDetailClient({
         {isDeleteModalOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-[#0d0d0d] border border-red-500/20 rounded-[2.5rem] p-8 shadow-2xl"
+              className="w-full max-w-md bg-surface border border-accent-red/20 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
             >
-              <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/20 mx-auto">
-                <Trash2 className="w-6 h-6 text-red-500" />
+              <div className="absolute top-0 left-0 w-full h-2 bg-accent-red shadow-[0_4px_20px_rgba(239,68,68,0.4)]" />
+              
+              <div className="w-20 h-20 bg-accent-red/10 rounded-[2rem] flex items-center justify-center mb-8 border border-accent-red/20 mx-auto shadow-sm">
+                <Trash2 className="w-10 h-10 text-accent-red" />
               </div>
-              <h2 className="text-xl font-black text-white text-center uppercase tracking-tight mb-2">Delete Workspace?</h2>
-              <p className="text-xs text-zinc-500 text-center mb-8 leading-relaxed">
-                This will permanently delete the workspace and <strong className="text-white">ALL associated transactions</strong>. To confirm, type <strong className="text-white font-mono tracking-widest px-1">"{workspace.name}"</strong>.
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Permanent Deletion?</h2>
+              <p className="text-[13px] text-muted text-center mb-10 leading-relaxed font-medium">
+                This will eradicate the workspace and <strong className="text-accent-red">ALL associated financial history</strong>. To confirm this destructive event, type <strong className="text-primary font-mono tracking-widest bg-surface-hover px-2 py-1 rounded">"{workspace.name}"</strong>.
               </p>
               
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <input 
                   type="text" 
                   value={deleteConfirmName} 
                   onChange={(e) => setDeleteConfirmName(e.target.value)} 
                   placeholder={workspace.name} 
-                  className="w-full h-[60px] bg-white/[0.02] border border-white/5 rounded-2xl px-6 text-sm font-bold text-center text-white focus:outline-none focus:border-red-500/50 transition-all font-mono tracking-widest" 
+                  className="w-full h-[64px] bg-surface-hover/50 border border-surface-border rounded-2xl px-6 text-base font-bold text-center text-primary focus:outline-none focus:ring-4 focus:ring-accent-red/10 transition-all font-mono tracking-widest shadow-inner" 
                 />
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => { setIsDeleteModalOpen(false); setDeleteConfirmName(''); }} className="h-[50px] rounded-xl text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">
-                    Cancel
+                  <button onClick={() => { setIsDeleteModalOpen(false); setDeleteConfirmName(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover">
+                    Abort
                   </button>
                   <button 
                     onClick={handleDelete}
                     disabled={loading || deleteConfirmName !== workspace.name}
-                    className="h-[50px] bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-colors disabled:opacity-30 flex items-center justify-center gap-2"
+                    className="h-[64px] bg-accent-red text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-lg shadow-accent-red/20"
                   >
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Delete'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm Destruction'}
                   </button>
                 </div>
               </div>
@@ -475,40 +481,42 @@ export default function WorkspaceDetailClient({
         {isTransferModalOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-[#0d0d0d] border border-blue-500/20 rounded-[2.5rem] p-8 shadow-2xl"
+              className="w-full max-w-md bg-surface border border-accent-blue/20 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
             >
-              <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 mx-auto">
-                <Shield className="w-6 h-6 text-blue-500" />
+              <div className="absolute top-0 left-0 w-full h-2 bg-accent-blue" />
+              
+              <div className="w-20 h-20 bg-accent-blue/10 rounded-[2rem] flex items-center justify-center mb-8 border border-accent-blue/20 mx-auto shadow-sm">
+                <Shield className="w-10 h-10 text-accent-blue" />
               </div>
-              <h2 className="text-xl font-black text-white text-center uppercase tracking-tight mb-2">Security Verification</h2>
-              <p className="text-xs text-zinc-500 text-center mb-8 leading-relaxed">
-                A critical security code has been sent to <strong className="text-white">{userEmail}</strong>. Enter it below to authorize "God Mode" transfer.
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Security Verification</h2>
+              <p className="text-[13px] text-muted text-center mb-10 leading-relaxed font-medium">
+                A critical security token has been dispatched to <strong className="text-primary">{userEmail}</strong>. Provide the 6-digit authorization code to transfer primary ownership.
               </p>
               
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <input 
                   type="text" 
                   value={transferOtp} 
                   onChange={(e) => setTransferOtp(e.target.value)} 
                   placeholder="000000" 
                   maxLength={6}
-                  className="w-full h-[60px] bg-white/[0.02] border border-white/5 rounded-2xl px-6 text-2xl font-black text-center text-white focus:outline-none focus:border-blue-500/50 transition-all tracking-[0.5em]" 
+                  className="w-full h-[72px] bg-surface-hover/50 border border-surface-border rounded-2xl px-6 text-3xl font-black text-center text-primary focus:outline-none focus:ring-4 focus:ring-accent-blue/10 transition-all tracking-[0.5em] shadow-inner" 
                 />
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => { setIsTransferModalOpen(false); setTransferOtp(''); setIsOtpSent(false); }} className="h-[50px] rounded-xl text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">
-                    Cancel
+                  <button onClick={() => { setIsTransferModalOpen(false); setTransferOtp(''); setIsOtpSent(false); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover">
+                    Abort
                   </button>
                   <button 
                     onClick={handleConfirmTransfer}
                     disabled={loading || transferOtp.length !== 6}
-                    className="h-[50px] bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-colors disabled:opacity-30 flex items-center justify-center gap-2"
+                    className="h-[64px] bg-accent-blue text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-lg shadow-accent-blue/20"
                   >
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Authorize Transfer'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Authorize Transfer'}
                   </button>
                 </div>
               </div>

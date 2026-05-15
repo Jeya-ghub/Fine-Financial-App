@@ -2,15 +2,15 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, KeyRound, ArrowRight, Loader2, CheckCircle2, User, Lock } from 'lucide-react'
-import { sendOtp, verifyOtp, finishOnboarding, signIn } from '@/app/actions/auth'
+import { Mail, KeyRound, ArrowRight, Loader2, CheckCircle2, User, Lock, Eye, EyeOff } from 'lucide-react'
+import { sendOtp, verifyOtp, finishOnboarding, signIn, resetPassword } from '@/app/actions/auth'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 export default function AuthPage() {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
-  const [step, setStep] = useState<'email' | 'otp' | 'onboarding'>('email')
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot_password'>('signin')
+  const [step, setStep] = useState<'email' | 'otp' | 'onboarding' | 'reset'>('email')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [token, setToken] = useState('')
@@ -19,6 +19,7 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [resendCountdown, setResendCountdown] = useState(0)
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -70,6 +71,12 @@ export default function AuthPage() {
       setError(res.error)
       setLoading(false)
     } else {
+      if (mode === 'forgot_password') {
+        setStep('reset')
+        setLoading(false)
+        return
+      }
+
       const supabase = createClient()
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
@@ -97,6 +104,23 @@ export default function AuthPage() {
     setLoading(true)
     setError(null)
     const res = await finishOnboarding(name, password)
+    if (res.error) {
+      setError(res.error)
+      setLoading(false)
+    } else {
+      setLoading(false)
+      setSuccess(true)
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 1000)
+    }
+  }
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    const res = await resetPassword(password)
     if (res.error) {
       setError(res.error)
       setLoading(false)
@@ -147,8 +171,8 @@ export default function AuthPage() {
                 <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
                   <Lock className="w-8 h-8 text-emerald-500" />
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight">Welcome Back</h1>
-                <p className="text-zinc-400 mt-2">Sign in to your account</p>
+                <h1 className="text-3xl font-bold tracking-tight text-white">Welcome Back</h1>
+                <p className="text-zinc-300 mt-2">Sign in to your account</p>
               </div>
 
               <form onSubmit={handleSignIn} className="space-y-4">
@@ -166,13 +190,32 @@ export default function AuthPage() {
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('forgot_password')
+                      setStep('email')
+                    }}
+                    className="text-sm text-zinc-400 hover:text-white transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
                 <button
                   type="submit"
@@ -192,7 +235,7 @@ export default function AuthPage() {
               <div className="text-center pt-4">
                 <button 
                   onClick={() => setMode('signup')}
-                  className="text-zinc-500 text-sm hover:text-white transition-colors"
+                  className="text-zinc-400 text-sm hover:text-white transition-colors"
                 >
                   Don't have an account? <span className="text-emerald-500 font-bold">Sign Up</span>
                 </button>
@@ -219,8 +262,8 @@ export default function AuthPage() {
                       <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
                         <User className="w-8 h-8 text-blue-500" />
                       </div>
-                      <h1 className="text-3xl font-bold tracking-tight">Join Us</h1>
-                      <p className="text-zinc-400 mt-2">Create your finance tracker account</p>
+                      <h1 className="text-3xl font-bold tracking-tight text-white">{mode === 'forgot_password' ? 'Reset Password' : 'Join Us'}</h1>
+                      <p className="text-zinc-400 mt-2">{mode === 'forgot_password' ? 'Enter your email to reset your password' : 'Create your finance tracker account'}</p>
                     </div>
 
                     <form onSubmit={handleSendOtp} className="space-y-4">
@@ -247,9 +290,9 @@ export default function AuthPage() {
                     <div className="text-center pt-4">
                       <button 
                         onClick={() => setMode('signin')}
-                        className="text-zinc-500 text-sm hover:text-white transition-colors"
+                        className="text-zinc-400 text-sm hover:text-white transition-colors"
                       >
-                        Already have an account? <span className="text-blue-500 font-bold">Sign In</span>
+                        {mode === 'forgot_password' ? 'Remember your password?' : 'Already have an account?'} <span className="text-blue-500 font-bold">Sign In</span>
                       </button>
                     </div>
                   </motion.div>
@@ -267,7 +310,7 @@ export default function AuthPage() {
                       <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
                         <KeyRound className="w-8 h-8 text-blue-500" />
                       </div>
-                      <h1 className="text-3xl font-bold tracking-tight">Verify</h1>
+                      <h1 className="text-3xl font-bold tracking-tight text-white">Verify</h1>
                       <p className="text-zinc-400 mt-2">Code sent to {email}</p>
                     </div>
 
@@ -316,7 +359,7 @@ export default function AuthPage() {
                       <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
                         <User className="w-8 h-8 text-emerald-500" />
                       </div>
-                      <h1 className="text-3xl font-bold tracking-tight">Finish Up</h1>
+                      <h1 className="text-3xl font-bold tracking-tight text-white">Finish Up</h1>
                       <p className="text-zinc-400 mt-2">Almost there! Set your details.</p>
                     </div>
 
@@ -335,14 +378,21 @@ export default function AuthPage() {
                       <div className="relative">
                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                         <input
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Create Password"
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                           required
                           minLength={8}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
                       </div>
                       <button
                         type="submit"
@@ -350,6 +400,53 @@ export default function AuthPage() {
                         className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : success ? <CheckCircle2 className="w-5 h-5" /> : 'Complete Setup'}
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+
+                {step === 'reset' && (
+                  <motion.div
+                    key="reset-step"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="text-center mb-8">
+                      <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+                        <Lock className="w-8 h-8 text-emerald-500" />
+                      </div>
+                      <h1 className="text-3xl font-bold tracking-tight text-white">New Password</h1>
+                      <p className="text-zinc-400 mt-2">Enter your new password below.</p>
+                    </div>
+
+                    <form onSubmit={handleResetPassword} className="space-y-4">
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="New Password"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                          required
+                          minLength={8}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={loading || password.length < 8 || success}
+                        className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : success ? <CheckCircle2 className="w-5 h-5" /> : 'Reset Password'}
                       </button>
                     </form>
                   </motion.div>
