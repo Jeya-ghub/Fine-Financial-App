@@ -8,6 +8,7 @@ import { CategoryList } from './components/CategoryList'
 import { RecentTransactions } from './components/RecentTransactions'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { DashboardData } from '@/types/dashboard.types'
+import { FilterBar } from '@/components/shared/FilterBar'
 import dynamic from 'next/dynamic'
 
 const SpendingChart = dynamic(() => import('./components/SpendingChart').then(mod => mod.SpendingChart), {
@@ -65,7 +66,10 @@ export function DashboardClient({ initialData }: { initialData: DashboardData | 
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4 pb-12"
     >
-      {/* HERO SECTION */}
+      {/* GLOBAL FILTER BAR */}
+      <div className="-mx-4 md:-mx-6 lg:-mx-8 mb-6">
+        <FilterBar />
+      </div>
       <HeroSection 
         name="Jeya" 
         savingAmount={data.net.toLocaleString()} 

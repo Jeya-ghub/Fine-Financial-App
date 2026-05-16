@@ -34,6 +34,7 @@ export interface ReportData {
   summary: ReportSummary
   chartData: ChartDataPoint[]
   categories: CategoryDistribution[]
+  subcategories: CategoryDistribution[]
   budgets: BudgetStatus[]
   transactions: Transaction[]
 }

@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 import DashboardHeader from './components/DashboardHeader'
 import TransactionDialog from './components/TransactionDialog'
 import { DashboardProvider } from '@/components/providers/DashboardProvider'
+import { FilterProvider } from '@/components/providers/FilterProvider'
 
 import { Suspense } from 'react'
 
@@ -45,30 +46,32 @@ export default async function DashboardLayout({
   const categories = categoriesRes.data || []
 
   return (
-    <DashboardProvider workspaceId={activeWorkspace.id}>
-      <div className="flex h-screen bg-background overflow-hidden text-primary font-sans">
-        <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <DashboardHeader 
-            userEmail={user.email || ''} 
+    <FilterProvider>
+      <DashboardProvider workspaceId={activeWorkspace.id}>
+        <div className="flex h-screen bg-background overflow-hidden text-primary font-sans">
+          <Sidebar />
+          <div className="flex-1 flex flex-col min-w-0">
+            <DashboardHeader 
+              userEmail={user.email || ''} 
+              workspaceId={activeWorkspace.id} 
+              categories={categories} 
+              workspaces={workspaces}
+            />
+            <main className="flex-1 overflow-y-auto custom-scrollbar">
+              <div className="p-4 md:p-6 lg:p-8 max-w-screen-2xl mx-auto w-full">
+                <Suspense fallback={<div className="animate-pulse bg-surface h-full w-full rounded-2xl" />}>
+                  {children}
+                </Suspense>
+              </div>
+            </main>
+          </div>
+          <TransactionDialog 
             workspaceId={activeWorkspace.id} 
-            categories={categories} 
-            workspaces={workspaces}
+            categories={categories as any} 
+            showTrigger={false}
           />
-          <main className="flex-1 overflow-y-auto custom-scrollbar">
-            <div className="p-4 md:p-6 lg:p-8 max-w-screen-2xl mx-auto w-full">
-              <Suspense fallback={<div className="animate-pulse bg-surface h-full w-full rounded-2xl" />}>
-                {children}
-              </Suspense>
-            </div>
-          </main>
         </div>
-        <TransactionDialog 
-          workspaceId={activeWorkspace.id} 
-          categories={categories as any} 
-          showTrigger={false}
-        />
-      </div>
-    </DashboardProvider>
+      </DashboardProvider>
+    </FilterProvider>
   )
 }

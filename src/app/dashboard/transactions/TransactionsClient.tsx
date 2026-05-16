@@ -3,8 +3,11 @@
 import { useState, useMemo, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Download, ArrowUpRight, ArrowDownRight, X, Loader2, ChevronDown, Calendar, DollarSign, FileText, CheckCircle2, Edit2, Trash2, ArrowDown, ArrowUp, RotateCcw } from 'lucide-react'
+import { Search, X, Loader2, ChevronDown, CheckCircle2, Edit2, Trash2, ArrowDown, ArrowUp, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { FilterBar } from '@/components/shared/FilterBar'
+import { useFilters } from '@/components/providers/FilterProvider'
+import { HighlightText } from '@/components/shared/HighlightText'
 
 import { Transaction } from '@/types/transaction.types'
 import { Category, Subcategory } from '@/types/category.types'
@@ -271,25 +274,12 @@ export default function TransactionsClient({
     realtimeUpsert,
     realtimeDelete
   } = useTransactions()
-  const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all')
-  const [categoryFilter, setCategoryFilter] = useState('')
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
+  const { filters } = useFilters()
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [auditTxId, setAuditTxId] = useState<string | null>(null)
   const [isMounted, setIsMounted] = useState(false)
 
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 300)
-    return () => clearTimeout(timer)
-  }, [search])
+  useEffect(() => { setIsMounted(true) }, [])
 
   // ── Realtime Sync ──
   useTransactionSync({
@@ -298,25 +288,49 @@ export default function TransactionsClient({
     onDelete: (id) => realtimeDelete(id),
   })
 
-  const today = new Date().toISOString().split('T')[0]
-
   const filtered = useMemo(() => {
+    const q = filters.searchQuery.toLowerCase()
+    const startStr = filters.dateRange.start.toISOString().split('T')[0]
+    const endStr   = filters.dateRange.end.toISOString().split('T')[0]
+
     return transactions.filter(t => {
-      const q = debouncedSearch.toLowerCase()
+      // Search across description, ID, category, subcategory
       const matchSearch = !q ||
         t.description?.toLowerCase().includes(q) ||
         t.id?.toLowerCase().includes(q) ||
-        t.categories?.name?.toLowerCase().includes(q)
-      const matchType = typeFilter === 'all' || t.type === typeFilter
-      const matchCat = !categoryFilter || t.categories?.name === categoryFilter
-      const txDate = t.date?.split('T')[0] ?? ''
-      const matchFrom = !dateFrom || txDate >= dateFrom
-      const matchTo = !dateTo || txDate <= dateTo
-      return matchSearch && matchType && matchCat && matchFrom && matchTo
-    })
-  }, [transactions, debouncedSearch, typeFilter, categoryFilter, dateFrom, dateTo])
+        t.categories?.name?.toLowerCase().includes(q) ||
+        (t as any).subcategories?.name?.toLowerCase().includes(q)
 
-  const hasActiveFilter = search || typeFilter !== 'all' || categoryFilter || dateFrom || dateTo
+      // Transaction type
+      const matchType = filters.transactionType === 'all' || t.type === filters.transactionType
+
+      // Categories multi-select
+      const matchCat = filters.categoryIds.length === 0 || filters.categoryIds.includes(t.category_id ?? '')
+
+      // Subcategories multi-select
+      const matchSub = filters.subcategoryIds.length === 0 || filters.subcategoryIds.includes((t as any).subcategory_id ?? '')
+
+      // Date range
+      const txDate = t.date?.split('T')[0] ?? ''
+      const matchDate = txDate >= startStr && txDate <= endStr
+
+      // Amount range
+      const amt = Number(t.amount)
+      const matchMin = filters.amountRange.min === null || amt >= filters.amountRange.min
+      const matchMax = filters.amountRange.max === null || amt <= filters.amountRange.max
+
+      return matchSearch && matchType && matchCat && matchSub && matchDate && matchMin && matchMax
+    }).sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'Oldest First':   return new Date(a.date).getTime() - new Date(b.date).getTime()
+        case 'Highest Amount': return Number(b.amount) - Number(a.amount)
+        case 'Lowest Amount':  return Number(a.amount) - Number(b.amount)
+        case 'A-Z':            return (a.description || '').localeCompare(b.description || '')
+        case 'Z-A':            return (b.description || '').localeCompare(a.description || '')
+        default:               return new Date(b.date).getTime() - new Date(a.date).getTime()
+      }
+    })
+  }, [transactions, filters])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this transaction?')) return
@@ -327,59 +341,16 @@ export default function TransactionsClient({
 
   return (
     <div className="flex flex-col h-full">
-      {/* ── Filter Bar ── */}
-      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-surface-border px-4 md:px-8 py-6 shadow-sm">
-        <div className="flex flex-wrap gap-4 items-center">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[240px] max-w-sm group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-focus-within:text-primary transition-colors" />
-            <input
-              type="text"
-              placeholder="Search across transactions..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full h-10 bg-surface border border-surface-border rounded-xl pl-10 pr-4 text-[12px] font-bold text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
-            />
-          </div>
+      {/* ── Global Filter Bar (shared state) ── */}
+      <FilterBar />
 
-          {/* Type Filter */}
-          <div className="flex p-0.5 bg-surface border border-surface-border rounded-xl h-10 shadow-sm">
-            {(['all', 'income', 'expense'] as const).map(t => (
-              <button key={t} onClick={() => setTypeFilter(t)} className={cn("px-4 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all relative", typeFilter === t ? 'bg-primary text-background shadow-md' : 'text-muted hover:text-primary')}>
-                {t}
-              </button>
-            ))}
-          </div>
-
-          {/* Category Filter */}
-          <div className="relative">
-            <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="h-10 bg-surface border border-surface-border rounded-xl pl-4 pr-10 text-[9px] font-black text-primary uppercase tracking-widest focus:outline-none appearance-none shadow-sm hover:border-surface-border-hover transition-all">
-              <option value="">All Categories</option>
-              {uniqueCategories.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
-          </div>
-
-          {/* Date Range */}
-          <div className="flex items-center gap-2 bg-surface border border-surface-border rounded-xl p-0.5 shadow-sm">
-            <input type="date" value={dateFrom} max={today} onChange={e => setDateFrom(e.target.value)} className="h-8 bg-transparent border-0 rounded-lg px-3 text-[9px] font-black text-primary focus:outline-none w-[130px]" placeholder="From" />
-            <span className="text-surface-border font-bold">|</span>
-            <input type="date" value={dateTo} max={today} onChange={e => setDateTo(e.target.value)} className="h-8 bg-transparent border-0 rounded-lg px-3 text-[9px] font-black text-primary focus:outline-none w-[130px]" placeholder="To" />
-          </div>
-
-          {/* Clear */}
-          {hasActiveFilter && (
-            <button onClick={() => { setSearch(''); setTypeFilter('all'); setCategoryFilter(''); setDateFrom(''); setDateTo('') }} className="h-10 px-4 text-[9px] font-black text-accent-red hover:bg-accent-red/5 uppercase tracking-widest transition-all flex items-center gap-2 border border-accent-red/20 rounded-xl">
-              <RotateCcw className="w-3.5 h-3.5" /> Reset
-            </button>
-          )}
-
-          <div className="ml-auto flex items-center gap-2 px-4 py-2 bg-surface-hover rounded-xl border border-surface-border">
-            <span className="text-[10px] font-black text-primary uppercase tracking-widest">{filtered.length}</span>
-            <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Records</span>
-          </div>
+      {/* Record Count */}
+      <div className="px-4 md:px-8 pt-4 flex items-center gap-2">
+        <div className="px-4 py-2 bg-surface-hover rounded-xl border border-surface-border inline-flex items-center gap-2">
+          <span className="text-[10px] font-black text-primary uppercase tracking-widest">{filtered.length}</span>
+          <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Matching Records</span>
+        </div>
       </div>
-    </div>
 
       {/* ── Data Table ── */}
       <div className="flex-1 overflow-auto px-4 md:px-8 py-8">
@@ -440,11 +411,15 @@ export default function TransactionsClient({
                       {t.type}
                     </span>
                   </div>
-                  <div className="text-[12px] font-black text-primary truncate">{t.categories?.name ?? '—'}</div>
-                  <div className="text-[11px] font-bold text-secondary truncate">{t.subcategories?.name ?? '—'}</div>
+                  <div className="text-[12px] font-black text-primary truncate">
+                    <HighlightText text={t.categories?.name ?? '—'} query={filters.searchQuery} />
+                  </div>
+                  <div className="text-[11px] font-bold text-secondary truncate">
+                    <HighlightText text={(t as any).subcategories?.name ?? '—'} query={filters.searchQuery} />
+                  </div>
                   <div className="relative group/tooltip flex items-center min-w-0">
                     <div className="text-[11px] text-muted truncate italic font-medium w-full">
-                      {t.description || '—'}
+                      <HighlightText text={t.description || '—'} query={filters.searchQuery} className="italic" />
                     </div>
                     {t.description && (
                       <div className="absolute z-[100] invisible group-hover/tooltip:visible opacity-0 group-hover/tooltip:opacity-100 bottom-full left-0 mb-2 w-max max-w-xs bg-surface/90 backdrop-blur-md border border-surface-border text-primary text-[11px] font-medium p-3 rounded-xl shadow-premium transition-all duration-200 whitespace-normal pointer-events-none ring-1 ring-white/10">
