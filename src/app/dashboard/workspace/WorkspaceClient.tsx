@@ -95,7 +95,7 @@ export default function WorkspaceClient({
             className="h-[48px] px-8 bg-primary text-background font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-elevated"
           >
             <Plus className="w-5 h-5" />
-            <span className="hidden md:inline">Initialize Workspace</span>
+            <span className="hidden md:inline">Create Workspace</span>
           </button>
         </div>
       </div>
@@ -108,7 +108,7 @@ export default function WorkspaceClient({
             <h3 className="text-[11px] font-black text-muted uppercase tracking-[0.3em]">Managed Environments</h3>
             <div className="h-px flex-1 bg-surface-border" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-col gap-4">
             {workspaces.map(w => {
               const isActive = w.id === activeWorkspace.id
               const role = w.workspace_members.find((m:any) => m.email === userEmail)?.role || 'member'
@@ -118,9 +118,9 @@ export default function WorkspaceClient({
                 <div 
                   key={w.id}
                   className={cn(
-                    "p-8 rounded-[2.5rem] border transition-all group relative overflow-hidden flex flex-col gap-8 shadow-premium hover:shadow-elevated hover:-translate-y-1",
+                    "p-5 rounded-3xl border transition-all group relative overflow-hidden flex items-center justify-between gap-6 shadow-sm hover:shadow-elevated",
                     isActive 
-                      ? "bg-surface border-primary/20 ring-4 ring-primary/5" 
+                      ? "bg-surface border-primary/20 ring-2 ring-primary/5" 
                       : "bg-surface border-surface-border hover:border-surface-border-hover"
                   )}
                 >
@@ -134,64 +134,67 @@ export default function WorkspaceClient({
                     className="absolute inset-0 z-10"
                   />
                   
-                  <div className="flex justify-between items-start relative z-0">
+                  <div className="flex items-center gap-5 relative z-0 flex-1">
                     <div className={cn(
-                      "w-16 h-16 rounded-[1.5rem] flex items-center justify-center font-black text-2xl shadow-sm border transition-all group-hover:scale-110",
+                      "w-12 h-12 rounded-[1rem] flex items-center justify-center font-black text-xl shadow-sm border transition-all group-hover:scale-105 shrink-0",
                       isActive 
                         ? "bg-primary text-background border-primary" 
                         : "bg-surface-hover text-muted border-surface-border"
                     )}>
                       {w.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="px-4 py-1.5 bg-surface-hover border border-surface-border rounded-xl text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2">
-                        <Users className="w-3.5 h-3.5 text-muted" /> {memberCount}
+                    
+                    <div className="flex flex-col items-start min-w-0">
+                      <div className="flex items-center gap-3 mb-1.5">
+                        <h4 className={cn("text-lg font-black tracking-tight truncate transition-colors", isActive ? "text-primary" : "text-primary/80 group-hover:text-primary")}>
+                          {w.name}
+                        </h4>
+                        {isActive && (
+                          <span className="text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20 shrink-0">
+                            Current
+                          </span>
+                        )}
+                        {role === 'owner' && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setRenamingWorkspace(w);
+                              setRenameValue(w.name);
+                              setIsRenameModalOpen(true);
+                            }}
+                            className="p-1.5 rounded-lg bg-surface-hover border border-surface-border text-muted hover:text-primary transition-all relative z-20 opacity-0 group-hover:opacity-100 shrink-0"
+                            title="Rename Workspace"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
-                      <div className={cn(
-                        "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm",
-                        role === 'owner' 
-                          ? "bg-accent-blue/10 text-accent-blue border-accent-blue/20" 
-                          : "bg-surface-hover text-muted border-surface-border"
-                      )}>
-                        {role === 'owner' ? <Shield className="w-3.5 h-3.5" /> : <Key className="w-3.5 h-3.5" />}
-                        {role}
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          "text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-lg border",
+                          w.type === 'private'
+                            ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20" 
+                            : "bg-accent-blue/10 text-accent-blue border-accent-blue/20"
+                        )}>
+                          {w.type === 'private' ? 'Confidential' : 'Collaborative'}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="relative z-0">
-                    <h4 className={cn("text-2xl font-black tracking-tight mb-3 transition-colors", isActive ? "text-primary" : "text-primary/80 group-hover:text-primary")}>
-                      {w.name}
-                    </h4>
-                    <div className="flex items-center gap-3">
-                      <span className={cn(
-                        "text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl border shadow-sm",
-                        w.type === 'private'
-                          ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20" 
-                          : "bg-accent-blue/10 text-accent-blue border-accent-blue/20"
-                      )}>
-                        {w.type === 'private' ? 'Confidential' : 'Collaborative'}
-                      </span>
-                      {isActive && (
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
-                          Current Focus
-                        </span>
-                      )}
-                      {role === 'owner' && (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setRenamingWorkspace(w);
-                            setRenameValue(w.name);
-                            setIsRenameModalOpen(true);
-                          }}
-                          className="p-1.5 rounded-xl bg-surface-hover border border-surface-border text-muted hover:text-primary transition-all relative z-20 shadow-sm"
-                          title="Rename Workspace"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
+                  <div className="flex items-center gap-3 relative z-0 shrink-0">
+                    <div className="px-3 py-1.5 bg-surface-hover border border-surface-border rounded-xl text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5">
+                      <Users className="w-3 h-3 text-muted" /> {memberCount}
+                    </div>
+                    <div className={cn(
+                      "px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 border shadow-sm",
+                      role === 'owner' 
+                        ? "bg-accent-blue/10 text-accent-blue border-accent-blue/20" 
+                        : "bg-surface-hover text-muted border-surface-border"
+                    )}>
+                      {role === 'owner' ? <Shield className="w-3 h-3" /> : <Key className="w-3 h-3" />}
+                      {role}
                     </div>
                   </div>
                 </div>
@@ -218,14 +221,14 @@ export default function WorkspaceClient({
                 <FolderTree className="w-10 h-10 text-accent-blue" />
               </div>
               
-              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Initialize Workspace</h2>
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Create Workspace</h2>
               <p className="text-[13px] text-muted text-center mb-10 leading-relaxed max-w-[280px] mx-auto font-medium">
                 Establish a secure, isolated environment for your financial operations.
               </p>
               
               <form onSubmit={handleCreateWorkspace} className="space-y-8">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">Workspace Designation</label>
+                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">Workspace Name</label>
                   <input 
                     type="text" 
                     value={newWorkspaceName} 
@@ -239,40 +242,40 @@ export default function WorkspaceClient({
                 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">Operational Mode</label>
-                  <div className="grid grid-cols-2 gap-3 bg-surface-hover/50 p-1.5 rounded-2xl border border-surface-border shadow-inner">
+                  <div className="flex w-full bg-surface-hover/50 p-1 rounded-xl border border-surface-border shadow-inner">
                     <button 
                       type="button" 
                       onClick={() => setNewWorkspaceType('private')}
                       className={cn(
-                        "py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm",
-                        newWorkspaceType === 'private' ? "bg-surface text-primary border border-surface-border" : "text-muted hover:text-primary hover:bg-surface"
+                        "flex-1 h-10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                        newWorkspaceType === 'private' ? "bg-primary text-background shadow-md" : "text-muted hover:text-primary hover:bg-surface"
                       )}
                     >
-                      Restricted
+                      Private
                     </button>
                     <button 
                       type="button" 
                       onClick={() => setNewWorkspaceType('shared')}
                       className={cn(
-                        "py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm",
-                        newWorkspaceType === 'shared' ? "bg-surface text-primary border border-surface-border" : "text-muted hover:text-primary hover:bg-surface"
+                        "flex-1 h-10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                        newWorkspaceType === 'shared' ? "bg-primary text-background shadow-md" : "text-muted hover:text-primary hover:bg-surface"
                       )}
                     >
-                      Collaborative
+                      Shared
                     </button>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 pt-6">
                   <button type="button" onClick={() => { setIsCreateModalOpen(false); setNewWorkspaceName(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover border border-transparent hover:border-surface-border">
-                    Abort
+                    Cancel
                   </button>
                   <button 
                     type="submit"
                     disabled={loading || !newWorkspaceName.trim()}
                     className="h-[64px] bg-primary text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated"
                   >
-                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Create'}
                   </button>
                 </div>
               </form>
@@ -305,7 +308,7 @@ export default function WorkspaceClient({
               
               <form onSubmit={handleRenameWorkspace} className="space-y-8">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">New Designation</label>
+                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">New Workspace Name</label>
                   <input 
                     type="text" 
                     value={renameValue} 
@@ -319,14 +322,14 @@ export default function WorkspaceClient({
                 
                 <div className="grid grid-cols-2 gap-4 pt-6">
                   <button type="button" onClick={() => { setIsRenameModalOpen(false); setRenameValue(''); setRenamingWorkspace(null); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover border border-transparent hover:border-surface-border">
-                    Abort
+                    Cancel
                   </button>
                   <button 
                     type="submit"
                     disabled={loading || !renameValue.trim()}
                     className="h-[64px] bg-primary text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated"
                   >
-                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Apply'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Save'}
                   </button>
                 </div>
               </form>

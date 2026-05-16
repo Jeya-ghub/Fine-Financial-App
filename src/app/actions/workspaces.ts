@@ -48,54 +48,8 @@ export async function createWorkspace(name: string = 'Private Workspace', type: 
     console.error('[Workspace] Member Error:', memberError)
   }
 
-  // 3. Seed Categories & Subcategories from Master
-  await seedWorkspaceCategories(workspace.id)
-
   revalidatePath('/dashboard')
   return { success: true, workspace }
-}
-
-async function seedWorkspaceCategories(workspaceId: string) {
-  const supabase = await createClient()
-  
-  // 1. Fetch Master Data
-  const { data: masters } = await supabase.from('master_categories').select('*')
-  if (!masters) return
-
-  // 2. Clone Categories
-  for (const master of masters) {
-    const { data: cat, error: catErr } = await supabase
-      .from('categories')
-      .insert({
-        workspace_id: workspaceId,
-        name: master.name,
-        type: master.type,
-        is_default: true,
-        version: 1
-      })
-      .select()
-      .single()
-
-    if (catErr) continue
-
-    // 3. Clone Subcategories for this category
-    const { data: subMasters } = await supabase
-      .from('master_subcategories')
-      .select('*')
-      .eq('category_id', master.id)
-
-    if (subMasters && subMasters.length > 0) {
-      await supabase.from('subcategories').insert(
-        subMasters.map(sm => ({
-          workspace_id: workspaceId,
-          category_id: cat.id,
-          name: sm.name,
-          is_default: true,
-          version: 1
-        }))
-      )
-    }
-  }
 }
 
 export async function getWorkspaces() {

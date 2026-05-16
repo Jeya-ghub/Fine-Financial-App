@@ -7,9 +7,10 @@ import {
   Plus, CheckCircle2, X, Send, Loader2, Info, Trash2, Clock
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { createInvite, leaveWorkspace, deleteWorkspace, revokeMember, requestOwnershipTransfer, confirmOwnershipTransfer } from '@/app/actions/workspaces'
+import { createInvite, leaveWorkspace, deleteWorkspace, revokeMember, requestOwnershipTransfer, confirmOwnershipTransfer, renameWorkspace } from '@/app/actions/workspaces'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Edit2 } from 'lucide-react'
 
 export default function WorkspaceDetailClient({ 
   workspace,
@@ -40,6 +41,9 @@ export default function WorkspaceDetailClient({
   const [transferTargetId, setTransferTargetId] = useState('')
   const [transferOtp, setTransferOtp] = useState('')
   const [isOtpSent, setIsOtpSent] = useState(false)
+
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
+  const [renameValue, setRenameValue] = useState('')
 
   // Supabase Realtime Sync
   useEffect(() => {
@@ -140,6 +144,21 @@ export default function WorkspaceDetailClient({
     }
   }
 
+  const handleRenameWorkspace = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!renameValue.trim()) return
+    setLoading(true)
+    const res = await renameWorkspace(workspace.id, renameValue.trim())
+    setLoading(false)
+    if (res.success) {
+      setIsRenameModalOpen(false)
+      setRenameValue('')
+      router.refresh()
+    } else {
+      alert(res.error)
+    }
+  }
+
   const allUsers = [
     ...members.map(m => ({ ...m, status: 'active' })),
     ...invites.map(i => ({ ...i, status: 'pending', role: 'member' }))
@@ -159,6 +178,18 @@ export default function WorkspaceDetailClient({
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-black text-primary tracking-tight leading-tight">{workspace.name}</h1>
+              {currentUserRole === 'owner' && (
+                <button
+                  onClick={() => {
+                    setRenameValue(workspace.name);
+                    setIsRenameModalOpen(true);
+                  }}
+                  className="p-1.5 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-muted hover:text-primary transition-all shadow-sm"
+                  title="Rename Workspace"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              )}
               <span className={cn(
                 "text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-xl border shadow-sm",
                 workspace.type === 'private' ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20" : "bg-accent-blue/10 text-accent-blue border-accent-blue/20"
@@ -290,7 +321,7 @@ export default function WorkspaceDetailClient({
           </h3>
           <p className="text-[13px] text-muted mb-10 font-medium max-w-2xl leading-relaxed relative z-10">
             {currentUserRole === 'owner' 
-              ? "Termination of a workspace is an irreversible event. All financial records, custom segments, and access protocols will be permanently destroyed. This action will immediately disconnect all authorized agents." 
+              ? "Deletion of a workspace is an irreversible event. All financial records, custom segments, and access protocols will be permanently destroyed. This action will immediately disconnect all authorized agents." 
               : "Exiting this workspace will immediately revoke your access credentials. Re-onboarding will require a new secure invitation from the primary architect."}
           </p>
           
@@ -300,7 +331,7 @@ export default function WorkspaceDetailClient({
                 onClick={() => setIsDeleteModalOpen(true)}
                 className="h-[48px] px-8 bg-accent-red text-white font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-lg shadow-accent-red/20 active:scale-95"
               >
-                <Trash2 className="w-4 h-4" /> Terminate Workspace
+                <Trash2 className="w-4 h-4" /> Delete Workspace
               </button>
             ) : (
               <button 
@@ -321,12 +352,12 @@ export default function WorkspaceDetailClient({
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsInviteOpen(false)}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" 
+              className="fixed inset-0 top-12 z-40 bg-black/60 backdrop-blur-sm" 
             />
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[420px] bg-surface border-l border-surface-border z-50 flex flex-col shadow-2xl"
+              className="fixed top-12 right-0 bottom-0 w-full md:w-[420px] bg-surface border-l border-surface-border z-50 flex flex-col shadow-2xl"
             >
               <div className="px-10 py-8 border-b border-surface-border flex items-center justify-between shrink-0">
                 <div>
@@ -413,7 +444,7 @@ export default function WorkspaceDetailClient({
                 
                 <div className="grid grid-cols-2 gap-4">
                   <button onClick={() => { setIsLeaveModalOpen(false); setLeaveConfirmName(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover">
-                    Abort
+                    Cancel
                   </button>
                   <button 
                     onClick={handleLeave}
@@ -445,9 +476,9 @@ export default function WorkspaceDetailClient({
               <div className="w-20 h-20 bg-accent-red/10 rounded-[2rem] flex items-center justify-center mb-8 border border-accent-red/20 mx-auto shadow-sm">
                 <Trash2 className="w-10 h-10 text-accent-red" />
               </div>
-              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Permanent Deletion?</h2>
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Delete Workspace?</h2>
               <p className="text-[13px] text-muted text-center mb-10 leading-relaxed font-medium">
-                This will eradicate the workspace and <strong className="text-accent-red">ALL associated financial history</strong>. To confirm this destructive event, type <strong className="text-primary font-mono tracking-widest bg-surface-hover px-2 py-1 rounded">"{workspace.name}"</strong>.
+                This will eradicate the workspace and <strong className="text-accent-red">ALL associated financial history</strong>. To confirm this destructive event, type <strong className="text-primary font-mono tracking-widest bg-surface-hover px-2 py-1 rounded">"{workspace.name}"</strong> below.
               </p>
               
               <div className="space-y-8">
@@ -461,14 +492,14 @@ export default function WorkspaceDetailClient({
                 
                 <div className="grid grid-cols-2 gap-4">
                   <button onClick={() => { setIsDeleteModalOpen(false); setDeleteConfirmName(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover">
-                    Abort
+                    Cancel
                   </button>
                   <button 
                     onClick={handleDelete}
                     disabled={loading || deleteConfirmName !== workspace.name}
                     className="h-[64px] bg-accent-red text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-lg shadow-accent-red/20"
                   >
-                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm Destruction'}
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirm Deletion'}
                   </button>
                 </div>
               </div>
@@ -509,7 +540,7 @@ export default function WorkspaceDetailClient({
                 
                 <div className="grid grid-cols-2 gap-4">
                   <button onClick={() => { setIsTransferModalOpen(false); setTransferOtp(''); setIsOtpSent(false); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover">
-                    Abort
+                    Cancel
                   </button>
                   <button 
                     onClick={handleConfirmTransfer}
@@ -520,6 +551,59 @@ export default function WorkspaceDetailClient({
                   </button>
                 </div>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* ── Rename Workspace Modal ── */}
+      <AnimatePresence>
+        {isRenameModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+              className="w-full max-w-md bg-surface border border-surface-border rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+              
+              <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-8 border border-primary/20 mx-auto shadow-sm">
+                <Edit2 className="w-10 h-10 text-primary" />
+              </div>
+              
+              <h2 className="text-2xl font-black text-primary text-center uppercase tracking-tight mb-3">Rename Workspace</h2>
+              <p className="text-[13px] text-muted text-center mb-10 leading-relaxed max-w-[280px] mx-auto font-medium">
+                Update the designation of your environment.
+              </p>
+              
+              <form onSubmit={handleRenameWorkspace} className="space-y-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-muted uppercase tracking-[0.25em] ml-2">New Workspace Name</label>
+                  <input 
+                    type="text" 
+                    value={renameValue} 
+                    onChange={(e) => setRenameValue(e.target.value)} 
+                    placeholder="e.g. My Private Workspace" 
+                    className="w-full h-[64px] bg-surface-hover/50 border border-surface-border rounded-2xl px-6 text-base font-bold text-center text-primary placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all shadow-sm" 
+                    required
+                    maxLength={30}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 pt-6">
+                  <button type="button" onClick={() => { setIsRenameModalOpen(false); setRenameValue(''); }} className="h-[64px] rounded-2xl text-[11px] font-black text-muted hover:text-primary uppercase tracking-[0.2em] transition-all hover:bg-surface-hover border border-transparent hover:border-surface-border">
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={loading || !renameValue.trim()}
+                    className="h-[64px] bg-primary text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3 shadow-elevated"
+                  >
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Save'}
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </motion.div>
         )}
