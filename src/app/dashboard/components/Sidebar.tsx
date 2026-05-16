@@ -6,7 +6,7 @@ import { signOut } from '@/app/actions/auth'
 import { useRouter } from 'next/navigation'
 import { 
   LayoutDashboard, 
-  Receipt, 
+  ReceiptIndianRupee, 
   Tag, 
   BarChart3, 
   FolderTree, 
@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils'
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: Receipt, label: 'Transactions', href: '/dashboard/transactions' },
+  { icon: ReceiptIndianRupee, label: 'Transactions', href: '/dashboard/transactions' },
   { icon: Tag, label: 'Categories', href: '/dashboard/categories' },
   { icon: BarChart3, label: 'Reports', href: '/dashboard/reports' },
   { icon: FolderTree, label: 'Workspace', href: '/dashboard/workspace' },
@@ -48,8 +48,8 @@ export default function Sidebar() {
       className="relative h-screen bg-surface border-r border-surface-border flex flex-col z-40 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] group shadow-premium"
     >
       {/* Logo Section */}
-      <div className="flex flex-col px-6 pt-10 pb-6">
-        <div className="flex items-center gap-3 px-2 mb-8">
+      <div className={cn("flex flex-col pt-10 pb-6 transition-all", isCollapsed ? "px-3 items-center" : "px-6")}>
+        <div className={cn("flex items-center gap-3 mb-8", isCollapsed ? "px-0 justify-center" : "px-2")}>
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-elevated border border-primary/10">
             <LayoutDashboard className="w-5 h-5 text-background" />
           </div>
@@ -71,7 +71,7 @@ export default function Sidebar() {
       </div>
 
       {/* Main Menu */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
+      <nav className={cn("flex-1 space-y-2 overflow-y-auto custom-scrollbar transition-all", isCollapsed ? "px-2" : "px-4")}>
         {menuItems.map((item) => {
           const isActive = pathname === item.href
           return (
@@ -79,7 +79,8 @@ export default function Sidebar() {
               key={item.href} 
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 h-10 rounded-xl transition-all relative group/item select-none cursor-pointer",
+                "flex items-center h-10 rounded-xl transition-all relative group/item select-none cursor-pointer",
+                isCollapsed ? "justify-center px-0" : "gap-3 px-3",
                 isActive 
                   ? "bg-primary/5 text-primary shadow-premium border border-primary/10 ring-1 ring-primary/5" 
                   : "text-muted hover:text-primary hover:bg-surface-hover/80 border border-transparent"
@@ -123,8 +124,8 @@ export default function Sidebar() {
         <button 
           onClick={() => setShowSignOutConfirm(true)}
           className={cn(
-            "w-full flex items-center gap-3 px-3 h-10 rounded-xl transition-all text-muted hover:text-accent-red hover:bg-accent-red/5 group/logout cursor-pointer select-none border border-transparent hover:border-accent-red/20",
-            isCollapsed ? "justify-center" : ""
+            "w-full flex items-center h-10 rounded-xl transition-all text-muted hover:text-accent-red hover:bg-accent-red/5 group/logout cursor-pointer select-none border border-transparent hover:border-accent-red/20",
+            isCollapsed ? "justify-center px-0" : "gap-3 px-3"
           )}
         >
           <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 group-hover/logout:text-accent-red transition-all">
@@ -195,7 +196,7 @@ export default function Sidebar() {
       {/* Collapse Toggle */}
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-4 top-12 w-8 h-8 rounded-xl bg-surface border border-surface-border flex items-center justify-center text-muted hover:text-primary hover:bg-surface-hover transition-all z-50 shadow-elevated opacity-0 group-hover:opacity-100 ring-4 ring-background"
+        className="absolute -right-4 top-24 w-8 h-8 rounded-xl bg-surface border border-surface-border flex items-center justify-center text-muted hover:text-primary hover:bg-surface-hover transition-all z-50 shadow-elevated opacity-0 group-hover:opacity-100 ring-4 ring-background"
       >
         {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
       </button>

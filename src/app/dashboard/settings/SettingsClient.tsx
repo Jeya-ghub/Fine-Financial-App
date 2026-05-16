@@ -361,59 +361,30 @@ export default function SettingsClient({
               {activeTab === 'appearance' && (
                 <div className="space-y-12">
                   <div className="mb-8">
-                    <h1 className="text-3xl font-black text-primary tracking-tighter uppercase leading-tight">Visual Interface</h1>
+                    <h1 className="text-3xl font-black text-primary tracking-tighter uppercase leading-tight">Theme</h1>
                     <p className="text-[13px] text-muted mt-2 font-medium max-w-lg">Establish your preferred sensory environment. Optimized for both low-light operations and high-visibility monitoring.</p>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl">
-                    {/* Dark Mode Card */}
+                  <div className="flex w-full sm:max-w-md bg-surface-hover/50 p-1 rounded-xl border border-surface-border shadow-inner">
                     <button 
+                      type="button" 
                       onClick={() => theme !== 'dark' && toggleTheme()}
                       className={cn(
-                        "group text-left space-y-4 p-4 rounded-3xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-premium hover:shadow-elevated relative overflow-hidden",
-                        theme === 'dark' ? "bg-surface border-primary ring-4 ring-primary/5" : "bg-surface border-surface-border opacity-60 hover:opacity-100"
+                        "flex-1 h-10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                        theme === 'dark' ? "bg-primary text-background shadow-md" : "text-muted hover:text-primary hover:bg-surface"
                       )}
                     >
-                      <div className="h-40 rounded-2xl bg-[#000] border border-white/5 flex items-center justify-center overflow-hidden relative shadow-inner">
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent-emerald/20 to-transparent opacity-50" />
-                        <div className="w-32 h-20 bg-[#0d0d0d] rounded-2xl border border-white/10 flex flex-col p-4 gap-3 shadow-2xl relative z-10">
-                          <div className="w-full h-3 bg-white/20 rounded-full" />
-                          <div className="w-2/3 h-3 bg-accent-emerald/50 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
-                        </div>
-                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                      </div>
-                      <div className="px-4">
-                        <div className="flex items-center justify-between">
-                          <span className="block text-base font-black text-primary tracking-tight">OLED NOIR</span>
-                          <div className={cn("w-4 h-4 rounded-full border-2 transition-all", theme === 'dark' ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]" : "border-surface-border")} />
-                        </div>
-                        <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-2">Maximum Battery Efficiency</p>
-                      </div>
+                      Dark
                     </button>
-
-                    {/* Light Mode Card */}
                     <button 
+                      type="button" 
                       onClick={() => theme !== 'light' && toggleTheme()}
                       className={cn(
-                        "group text-left space-y-4 p-4 rounded-3xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-premium hover:shadow-elevated relative overflow-hidden",
-                        theme === 'light' ? "bg-surface border-primary ring-4 ring-primary/5" : "bg-surface border-surface-border opacity-60 hover:opacity-100"
+                        "flex-1 h-10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                        theme === 'light' ? "bg-primary text-background shadow-md" : "text-muted hover:text-primary hover:bg-surface"
                       )}
                     >
-                      <div className="h-40 rounded-2xl bg-[#f8fafc] border border-black/5 flex items-center justify-center overflow-hidden relative shadow-inner">
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-50" />
-                        <div className="w-32 h-20 bg-white rounded-2xl border border-black/5 flex flex-col p-4 gap-3 shadow-2xl relative z-10">
-                          <div className="w-full h-3 bg-black/10 rounded-full" />
-                          <div className="w-2/3 h-3 bg-accent-blue/50 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.2)]" />
-                        </div>
-                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                      </div>
-                      <div className="px-4">
-                        <div className="flex items-center justify-between">
-                          <span className="block text-base font-black text-primary tracking-tight">CRYSTAL SLATE</span>
-                          <div className={cn("w-4 h-4 rounded-full border-2 transition-all", theme === 'light' ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]" : "border-surface-border")} />
-                        </div>
-                        <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-2">Optimal Readability</p>
-                      </div>
+                      Light
                     </button>
                   </div>
                 </div>
