@@ -49,7 +49,10 @@ export default function Sidebar() {
     >
       {/* Logo Section */}
       <div className={cn("flex flex-col pt-10 pb-6 transition-all", isCollapsed ? "px-3 items-center" : "px-6")}>
-        <div className={cn("flex items-center gap-3 mb-8", isCollapsed ? "px-0 justify-center" : "px-2")}>
+        <Link 
+          href="/dashboard"
+          className={cn("flex items-center gap-3 mb-8 cursor-pointer hover:opacity-80 transition-opacity outline-none", isCollapsed ? "px-0 justify-center" : "px-2")}
+        >
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-elevated border border-primary/10">
             <LayoutDashboard className="w-5 h-5 text-background" />
           </div>
@@ -67,7 +70,7 @@ export default function Sidebar() {
               </span>
             </motion.div>
           )}
-        </div>
+        </Link>
       </div>
 
       {/* Main Menu */}
