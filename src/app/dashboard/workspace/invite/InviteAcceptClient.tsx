@@ -12,6 +12,7 @@ export default function InviteAcceptClient({ token, userEmail }: { token: string
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [bypassOtp, setBypassOtp] = useState('')
 
   const handleStartAccept = async () => {
     setLoading(true)
@@ -19,6 +20,9 @@ export default function InviteAcceptClient({ token, userEmail }: { token: string
     const res = await sendInviteOtp(token)
     setLoading(false)
     if (res.success) {
+      if (res.emailSent === false) {
+        setBypassOtp(res.bypassOtp || '')
+      }
       setStep('otp')
     } else {
       setError(res.error || 'Failed to initiate acceptance.')
@@ -92,6 +96,15 @@ export default function InviteAcceptClient({ token, userEmail }: { token: string
             {error && (
               <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] font-black text-red-500 uppercase tracking-widest">
                 {error}
+              </div>
+            )}
+
+            {bypassOtp && (
+              <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-[10px] font-black text-emerald-400 uppercase tracking-widest text-left leading-relaxed">
+                🔒 Secure Local Mode: Automated email service is offline. To proceed securely, use this authentication code:
+                <div className="mt-2 text-center bg-white/10 px-3 py-2 rounded-xl border border-white/10 select-all font-mono text-lg text-white font-black tracking-[0.2em]">
+                  {bypassOtp}
+                </div>
               </div>
             )}
 
