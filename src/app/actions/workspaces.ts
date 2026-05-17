@@ -189,6 +189,8 @@ export async function createInvite(workspaceId: string, emailString: string) {
     return { error: error.message }
   }
 
+  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/workspace/invite?token=${token}`
+
   // Send invitation email
   try {
     await mailer.sendMail({
@@ -201,20 +203,23 @@ export async function createInvite(workspaceId: string, emailString: string) {
           <p style="color: #a1a1aa; font-size: 16px; line-height: 24px; margin-bottom: 32px;">
             You have been invited to collaborate on a workspace in Fine Finance.
           </p>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/workspace/invite?token=${token}" 
+          <a href="${inviteUrl}" 
              style="background-color: #10b981; color: white; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block;">
             Accept Invitation
           </a>
         </div>
       `,
     })
+    
+    revalidatePath('/dashboard/workspace', 'layout')
+    return { success: true, emailSent: true }
   } catch (err: any) {
-    console.error('[Workspace] Invite Email Error:', err)
-    return { error: err.message || 'Failed to send invitation email.' }
+    console.error('[Workspace] Invite Email Error (SMTP likely not configured):', err)
+    
+    // 🛡️ Fallback: SMTP is offline/unconfigured, but the invitation is registered in DB!
+    revalidatePath('/dashboard/workspace', 'layout')
+    return { success: true, emailSent: false, inviteUrl }
   }
-
-  revalidatePath('/dashboard/workspace', 'layout')
-  return { success: true }
 }
 
 export async function sendInviteOtp(token: string) {

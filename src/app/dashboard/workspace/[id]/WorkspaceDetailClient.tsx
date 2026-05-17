@@ -30,6 +30,16 @@ export default function WorkspaceDetailClient({
   const [inviteEmail, setInviteEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [inviteSuccess, setInviteSuccess] = useState(false)
+  const [createdInviteUrl, setCreatedInviteUrl] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const closeInviteDrawer = () => {
+    setIsInviteOpen(false)
+    setInviteSuccess(false)
+    setInviteEmail('')
+    setCreatedInviteUrl('')
+    setCopied(false)
+  }
   
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false)
   const [leaveConfirmName, setLeaveConfirmName] = useState('')
@@ -71,13 +81,16 @@ export default function WorkspaceDetailClient({
     const res = await createInvite(workspace.id, inviteEmail)
     setLoading(false)
     if (res.success) {
-      setInviteSuccess(true)
-      setTimeout(() => {
-        setIsInviteOpen(false)
-        setInviteSuccess(false)
-        setInviteEmail('')
-        router.refresh()
-      }, 2000)
+      if (res.emailSent === false) {
+        setCreatedInviteUrl(res.inviteUrl || '')
+        setInviteSuccess(true)
+      } else {
+        setInviteSuccess(true)
+        setTimeout(() => {
+          closeInviteDrawer()
+          router.refresh()
+        }, 2000)
+      }
     } else {
       alert(res.error)
     }
@@ -360,7 +373,7 @@ export default function WorkspaceDetailClient({
           <>
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsInviteOpen(false)}
+              onClick={closeInviteDrawer}
               className="fixed inset-0 top-12 z-40 bg-black/60 backdrop-blur-sm" 
             />
             <motion.div
@@ -373,22 +386,67 @@ export default function WorkspaceDetailClient({
                   <h2 className="text-xl font-black text-primary uppercase tracking-tight">Invite Member</h2>
                   <p className="text-[10px] text-muted font-bold uppercase tracking-[0.2em] mt-1.5">Grant Environment Access</p>
                 </div>
-                <button onClick={() => setIsInviteOpen(false)} className="p-3 bg-surface-hover border border-surface-border rounded-2xl text-muted hover:text-primary transition-all active:scale-90">
+                <button onClick={closeInviteDrawer} className="p-3 bg-surface-hover border border-surface-border rounded-2xl text-muted hover:text-primary transition-all active:scale-90">
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
               <div className="flex-1 p-10 overflow-y-auto">
                 {inviteSuccess ? (
-                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="h-full flex flex-col items-center justify-center text-center">
-                    <div className="w-24 h-24 bg-accent-emerald/10 rounded-[2.5rem] flex items-center justify-center mb-8 border border-accent-emerald/20 shadow-sm">
-                      <CheckCircle2 className="w-12 h-12 text-accent-emerald" />
-                    </div>
-                    <h3 className="text-2xl font-black text-primary uppercase tracking-tight mb-3">Invite Dispatched</h3>
-                    <p className="text-[13px] text-muted font-medium leading-relaxed max-w-[280px]">
-                      A secure authentication token has been generated and sent to the recipient.
-                    </p>
-                  </motion.div>
+                  createdInviteUrl ? (
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                      <div className="w-20 h-20 bg-accent-emerald/10 rounded-[2rem] flex items-center justify-center border border-accent-emerald/20 shadow-sm">
+                        <CheckCircle2 className="w-10 h-10 text-accent-emerald" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-black text-primary uppercase tracking-tight">Invite Generated</h3>
+                        <p className="text-[9px] text-accent-emerald font-black uppercase tracking-[0.2em] mt-1.5 bg-accent-emerald/5 border border-accent-emerald/10 px-2 py-0.5 rounded-full inline-block">Secure Local Mode</p>
+                      </div>
+                      
+                      <p className="text-[12px] text-muted leading-relaxed max-w-sm">
+                        The secure invite has been successfully registered. Since automated notifications are currently offline, you can share this direct link with your collaborator:
+                      </p>
+
+                      <div className="w-full space-y-3">
+                        <input 
+                          type="text" 
+                          readOnly 
+                          value={createdInviteUrl} 
+                          className="w-full h-12 bg-surface-hover/50 border border-surface-border rounded-xl px-4 text-[11px] font-mono font-bold text-muted focus:outline-none select-all shadow-inner" 
+                        />
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(createdInviteUrl)
+                            setCopied(true)
+                            setTimeout(() => setCopied(false), 2000)
+                          }}
+                          className="w-full h-12 bg-primary text-background font-black uppercase tracking-widest rounded-xl text-[10px] hover:opacity-90 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm"
+                        >
+                          {copied ? 'Copied to Clipboard!' : 'Copy Invite Link'}
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          closeInviteDrawer()
+                          router.refresh()
+                        }}
+                        className="w-full h-12 bg-surface-hover hover:bg-surface border border-surface-border text-primary font-black uppercase tracking-widest rounded-xl text-[10px] transition-all active:scale-95 shadow-sm"
+                      >
+                        Close
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="h-full flex flex-col items-center justify-center text-center">
+                      <div className="w-24 h-24 bg-accent-emerald/10 rounded-[2.5rem] flex items-center justify-center mb-8 border border-accent-emerald/20 shadow-sm">
+                        <CheckCircle2 className="w-12 h-12 text-accent-emerald" />
+                      </div>
+                      <h3 className="text-2xl font-black text-primary uppercase tracking-tight mb-3">Invite Dispatched</h3>
+                      <p className="text-[13px] text-muted font-medium leading-relaxed max-w-[280px]">
+                        A secure authentication token has been generated and sent to the recipient.
+                      </p>
+                    </motion.div>
+                  )
                 ) : (
                   <form onSubmit={handleInvite} className="space-y-10">
                     <div className="space-y-3">
