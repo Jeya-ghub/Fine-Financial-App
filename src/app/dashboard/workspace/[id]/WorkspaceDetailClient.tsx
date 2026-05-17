@@ -320,13 +320,22 @@ export default function WorkspaceDetailClient({
             <ShieldAlert className="w-5 h-5" /> Critical Governance Zone
           </h3>
           <p className="text-[13px] text-muted mb-10 font-medium max-w-2xl leading-relaxed relative z-10">
-            {currentUserRole === 'owner' 
-              ? "Deletion of a workspace is an irreversible event. All financial records, custom segments, and access protocols will be permanently destroyed. This action will immediately disconnect all authorized agents." 
-              : "Exiting this workspace will immediately revoke your access credentials. Re-onboarding will require a new secure invitation from the primary architect."}
+            {workspace.type === 'private'
+              ? "Private workspaces cannot be deleted to ensure you always have a secure, isolated personal environment."
+              : currentUserRole === 'owner' 
+                ? "Deletion of a workspace is an irreversible event. All financial records, custom segments, and access protocols will be permanently destroyed. This action will immediately disconnect all authorized agents." 
+                : "Exiting this workspace will immediately revoke your access credentials. Re-onboarding will require a new secure invitation from the primary architect."}
           </p>
           
           <div className="flex gap-4 relative z-10">
-            {currentUserRole === 'owner' ? (
+            {workspace.type === 'private' ? (
+              <button 
+                disabled
+                className="h-[48px] px-8 bg-accent-red/20 text-white/40 font-black uppercase tracking-widest rounded-2xl text-[11px] cursor-not-allowed flex items-center gap-3 border border-accent-red/10"
+              >
+                <Shield className="w-4 h-4" /> Private Workspace Locked
+              </button>
+            ) : currentUserRole === 'owner' ? (
               <button 
                 onClick={() => setIsDeleteModalOpen(true)}
                 className="h-[48px] px-8 bg-accent-red text-white font-black uppercase tracking-widest rounded-2xl text-[11px] hover:opacity-90 transition-all flex items-center gap-3 shadow-lg shadow-accent-red/20 active:scale-95"

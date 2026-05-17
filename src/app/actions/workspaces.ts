@@ -57,26 +57,14 @@ export async function getWorkspaces() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized', data: null }
   
-  // 1. Get workspace IDs the user is part of
-  const { data: userMemberships } = await supabase
-    .from('workspace_members')
-    .select('workspace_id')
-    .eq('user_id', user.id)
-
-  if (!userMemberships || userMemberships.length === 0) {
-    return { success: true, data: [] }
-  }
-
-  const workspaceIds = userMemberships.map(m => m.workspace_id)
-
-  // 2. Fetch those workspaces with ALL their members
+  // Fetch workspaces directly from public.workspaces.
+  // Row Level Security (RLS) policies handle filtering securely.
   const { data, error } = await supabase
     .from('workspaces')
     .select(`
       *,
       workspace_members(id, role, user_id, email)
     `)
-    .in('id', workspaceIds)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -353,6 +341,21 @@ export async function deleteWorkspace(workspaceId: string) {
 
   if (member?.role !== 'owner') {
     return { error: 'Only the workspace owner can delete it.' }
+  }
+
+  // Prevent deletion of private/default workspaces
+  const { data: workspace, error: wsError } = await supabase
+    .from('workspaces')
+    .select('type')
+    .eq('id', workspaceId)
+    .single()
+
+  if (wsError || !workspace) {
+    return { error: 'Workspace not found.' }
+  }
+
+  if (workspace.type === 'private') {
+    return { error: 'Private workspaces cannot be deleted to ensure you always have a secure, isolated personal environment.' }
   }
 
   // Use Admin Client for full cleanup to bypass RLS and handle all tables
