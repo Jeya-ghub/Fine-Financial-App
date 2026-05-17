@@ -20,6 +20,7 @@ export function HeroSection({ name, savingAmount, trend }: { name: string; savin
   if (hour >= 5 && hour < 12) greeting = 'Good Morning'
   else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon'
 
+  const dayStr = now.toLocaleString('en-US', { weekday: 'long' })
   const dateStr = `${now.getDate().toString().padStart(2, '0')}-${now.toLocaleString('en-US', { month: 'long' })}-${now.getFullYear()}`
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
 
@@ -39,12 +40,15 @@ export function HeroSection({ name, savingAmount, trend }: { name: string; savin
             <span className="text-[10px] font-black text-muted uppercase tracking-[0.4em]">Live Intelligence Active</span>
           </div>
           <h1 className="text-3xl font-black text-primary tracking-tighter mb-2 leading-none">
-            {mounted ? greeting : 'Welcome'}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">{name}</span>
+            {mounted ? greeting : 'Welcome'}, <span className="text-primary">{name}</span>
           </h1>
         </div>
 
         <div className="flex flex-col items-start md:items-end gap-1 relative z-10 text-right">
-          <div className="text-sm font-black text-primary tracking-tight uppercase">
+          <div className="text-xl font-black text-primary tracking-tight leading-none">
+            {mounted ? dayStr : '-------'}
+          </div>
+          <div className="text-xs font-bold text-primary tracking-widest mt-0.5">
             {mounted ? dateStr : '--/--/----'}
           </div>
           <div className="text-[11px] font-bold text-muted uppercase tracking-widest">

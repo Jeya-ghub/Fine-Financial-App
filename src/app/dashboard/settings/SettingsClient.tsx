@@ -153,7 +153,7 @@ export default function SettingsClient({
                           type="text" 
                           value={username}
                           onChange={(e) => {
-                            const val = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, 10).toUpperCase()
+                            const val = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, 10)
                             setUsername(val)
                           }}
                           placeholder="DESIGNATION"
@@ -429,7 +429,7 @@ export default function SettingsClient({
                       
                       <div className="space-y-4 max-w-sm relative z-10">
                         <div className="space-y-1.5">
-                          <label className="text-[9px] font-black text-muted uppercase tracking-[0.25em] ml-1">Verification Required: Type "{username}"</label>
+                          <label className="text-[9px] font-black text-muted tracking-[0.25em] ml-1 uppercase">Verification Required: Type <span className="normal-case">"{username}"</span></label>
                           <input 
                             type="text" 
                             value={deleteConfirm}

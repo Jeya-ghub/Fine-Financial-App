@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, KeyRound, ArrowRight, Loader2, CheckCircle2, User, Lock, Eye, EyeOff } from 'lucide-react'
-import { sendOtp, verifyOtp, finishOnboarding, signIn, resetPassword } from '@/app/actions/auth'
+import { sendOtp, verifyOtp, finishOnboarding, signIn, resetPassword, signupAndOnboard } from '@/app/actions/auth'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
@@ -13,6 +13,7 @@ export default function AuthPage() {
   const [step, setStep] = useState<'email' | 'otp' | 'onboarding' | 'reset'>('email')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [token, setToken] = useState('')
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -43,6 +44,15 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+
+    // Client-side email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError('Invalid email address format.')
+      setLoading(false)
+      return
+    }
+
     const res = await sendOtp(email)
     if (res.error) {
       setError(res.error)
@@ -77,25 +87,9 @@ export default function AuthPage() {
         return
       }
 
-      const supabase = createClient()
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      
-      if (userError) {
-        setError(userError.message)
-        setLoading(false)
-        return
-      }
-
-      if (user?.user_metadata?.onboarded) {
-        setLoading(false)
-        setSuccess(true)
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, 1000)
-      } else {
-        setStep('onboarding')
-        setLoading(false)
-      }
+      // Signup Flow: Move directly to onboarding details step
+      setStep('onboarding')
+      setLoading(false)
     }
   }
 
@@ -103,7 +97,33 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const res = await finishOnboarding(name, password)
+
+    // Username Validation
+    const usernameRegex = /^[A-Za-z]+$/
+    if (!usernameRegex.test(name)) {
+      setError('Username must contain letters only.')
+      setLoading(false)
+      return
+    }
+    if (name.length > 10) {
+      setError('Username must be at most 10 characters long.')
+      setLoading(false)
+      return
+    }
+
+    // Password Validation
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.')
+      setLoading(false)
+      return
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.')
+      setLoading(false)
+      return
+    }
+
+    const res = await signupAndOnboard(email, name, password)
     if (res.error) {
       setError(res.error)
       setLoading(false)
@@ -266,35 +286,76 @@ export default function AuthPage() {
                       <p className="text-zinc-400 mt-2">{mode === 'forgot_password' ? 'Enter your email to reset your password' : 'Create your finance tracker account'}</p>
                     </div>
 
-                    <form onSubmit={handleSendOtp} className="space-y-4">
-                      <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="Email Address"
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-                          required
-                        />
+                    {error === 'Email already registered' ? (
+                      <div className="space-y-6 text-center">
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                          <p className="text-red-400 text-sm font-bold">Email already registered</p>
+                        </div>
+                        <div className="flex gap-4">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMode('signin')
+                              setStep('email')
+                              setError(null)
+                            }}
+                            className="flex-1 bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-200 transition-colors text-center text-sm"
+                          >
+                            Login
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMode('forgot_password')
+                              setStep('email')
+                              setError(null)
+                            }}
+                            className="flex-1 bg-white/10 text-white font-bold py-4 rounded-2xl hover:bg-white/20 transition-colors text-center text-sm border border-white/10"
+                          >
+                            Forgot Password
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setError(null)}
+                          className="text-zinc-400 text-xs hover:text-white transition-colors"
+                        >
+                          Try a different email
+                        </button>
                       </div>
-                      <button
-                        type="submit"
-                        disabled={loading || !email}
-                        className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                      >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Get Verification Code <ArrowRight className="w-5 h-5" /></>}
-                      </button>
-                    </form>
+                    ) : (
+                      <>
+                        <form onSubmit={handleSendOtp} className="space-y-4">
+                          <div className="relative">
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                            <input
+                              type="email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="Email Address"
+                              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                              required
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            disabled={loading || !email}
+                            className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                          >
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Get Verification Code <ArrowRight className="w-5 h-5" /></>}
+                          </button>
+                        </form>
 
-                    <div className="text-center pt-4">
-                      <button 
-                        onClick={() => setMode('signin')}
-                        className="text-zinc-400 text-sm hover:text-white transition-colors"
-                      >
-                        {mode === 'forgot_password' ? 'Remember your password?' : 'Already have an account?'} <span className="text-blue-500 font-bold">Sign In</span>
-                      </button>
-                    </div>
+                        <div className="text-center pt-4">
+                          <button 
+                            onClick={() => setMode('signin')}
+                            className="text-zinc-400 text-sm hover:text-white transition-colors"
+                          >
+                            {mode === 'forgot_password' ? 'Remember your password?' : 'Already have an account?'} <span className="text-blue-500 font-bold">Sign In</span>
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </motion.div>
                 )}
 
@@ -359,8 +420,8 @@ export default function AuthPage() {
                       <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
                         <User className="w-8 h-8 text-emerald-500" />
                       </div>
-                      <h1 className="text-3xl font-bold tracking-tight text-white">Finish Up</h1>
-                      <p className="text-zinc-400 mt-2">Almost there! Set your details.</p>
+                      <h1 className="text-3xl font-bold tracking-tight text-white">Profile Setup</h1>
+                      <p className="text-zinc-400 mt-2">Enter your profile details to load your bento dashboard.</p>
                     </div>
 
                     <form onSubmit={handleFinishOnboarding} className="space-y-4">
@@ -369,10 +430,16 @@ export default function AuthPage() {
                         <input
                           type="text"
                           value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Full Name"
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^A-Za-z]/g, '')
+                            if (val.length <= 10) {
+                              setName(val)
+                            }
+                          }}
+                          placeholder="Username (Letters Only, Max 10)"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all font-semibold"
                           required
+                          maxLength={10}
                         />
                       </div>
                       <div className="relative">
@@ -381,7 +448,7 @@ export default function AuthPage() {
                           type={showPassword ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Create Password"
+                          placeholder="Password (Min 8)"
                           className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                           required
                           minLength={8}
@@ -394,9 +461,21 @@ export default function AuthPage() {
                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                         </button>
                       </div>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirm Password"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                          required
+                          minLength={8}
+                        />
+                      </div>
                       <button
                         type="submit"
-                        disabled={loading || !name || password.length < 8 || success}
+                        disabled={loading || !name || password.length < 8 || confirmPassword.length < 8 || password !== confirmPassword || success}
                         className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : success ? <CheckCircle2 className="w-5 h-5" /> : 'Complete Setup'}
@@ -456,7 +535,7 @@ export default function AuthPage() {
           )}
         </AnimatePresence>
 
-        {error && (
+        {error && error !== 'Email already registered' && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

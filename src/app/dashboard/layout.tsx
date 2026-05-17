@@ -7,6 +7,7 @@ import DashboardHeader from './components/DashboardHeader'
 import TransactionDialog from './components/TransactionDialog'
 import { DashboardProvider } from '@/components/providers/DashboardProvider'
 import { FilterProvider } from '@/components/providers/FilterProvider'
+import NoWorkspaceFallback from './components/NoWorkspaceFallback'
 
 import { Suspense } from 'react'
 
@@ -27,16 +28,19 @@ export default async function DashboardLayout({
   }
 
   if (!workspaces || workspaces.length === 0) {
-    // This should ideally not happen after the onboarding fix, 
-    // but we'll show a fallback or redirect to a creation page if it does.
-    return (
-      <div className="flex h-screen bg-zinc-50 dark:bg-[#0a0a0a] items-center justify-center text-zinc-900 dark:text-white">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">No Workspace Found</h1>
-          <p className="text-zinc-500">Please contact support or try logging in again.</p>
-        </div>
-      </div>
-    )
+    // Attempt auto-creation of default workspace
+    try {
+      const { createWorkspace } = await import('@/app/actions/workspaces')
+      const wsName = `${user.user_metadata?.full_name || 'My'}'s Workspace`
+      const res = await createWorkspace(wsName)
+      if (res.success && res.workspace) {
+        redirect('/dashboard')
+      }
+    } catch (err) {
+      console.error('[DashboardLayout] Auto-creation failed:', err)
+    }
+
+    return <NoWorkspaceFallback userEmail={user.email || undefined} />
   }
 
   const activeWorkspace = workspaces.find(w => w.id === activeIdCookie) || workspaces[0]
@@ -51,10 +55,11 @@ export default async function DashboardLayout({
         <div className="flex h-screen bg-background overflow-hidden text-primary font-sans">
           <Sidebar />
           <div className="flex-1 flex flex-col min-w-0">
-            <DashboardHeader 
-              userEmail={user.email || ''} 
-              workspaceId={activeWorkspace.id} 
-              categories={categories} 
+            <DashboardHeader
+              userEmail={user.email || ''}
+              username={user.user_metadata?.username || user.user_metadata?.full_name || user.email?.split('@')[0] || ''}
+              workspaceId={activeWorkspace.id}
+              categories={categories}
               workspaces={workspaces}
             />
             <main className="flex-1 overflow-y-auto custom-scrollbar">
@@ -65,9 +70,9 @@ export default async function DashboardLayout({
               </div>
             </main>
           </div>
-          <TransactionDialog 
-            workspaceId={activeWorkspace.id} 
-            categories={categories as any} 
+          <TransactionDialog
+            workspaceId={activeWorkspace.id}
+            categories={categories as any}
             showTrigger={false}
           />
         </div>

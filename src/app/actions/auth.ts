@@ -10,7 +10,27 @@ import { headers } from 'next/headers'
 
 export async function sendOtp(rawEmail: string) {
   const email = rawEmail.toLowerCase().trim()
-  // 1. Check General Send Rate Limit (3 requests per 5 minutes per email)
+
+  // 1. Validate Email Format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return { error: 'Invalid email address format.' }
+  }
+
+  // 2. Check if Email Already Exists in Database
+  const adminClient = await createAdminClient()
+  const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers()
+  
+  if (listError) {
+    console.error('[Auth] Failed to check existing user:', listError)
+  }
+
+  const userExists = users?.some(u => u.email?.toLowerCase() === email)
+  if (userExists) {
+    return { error: 'Email already registered' }
+  }
+
+  // 3. Check General Send Rate Limit (3 requests per 5 minutes per email)
   const rateLimit = await checkRateLimit(`otp_send:${email}`, 3, 300)
   if (!rateLimit.success) {
     return { 
@@ -18,16 +38,16 @@ export async function sendOtp(rawEmail: string) {
     }
   }
 
-  // 2. Generate 6-digit OTP
+  // 4. Generate 6-digit OTP
   const otp = randomInt(100000, 999999).toString()
 
-  // 3. Store Securely in Redis (Hashed, Atomic)
+  // 5. Store Securely in Redis (Hashed, Atomic)
   await storeSecureOtp(email, otp)
   
   // ALWAYS Log OTP for developer bypass in terminal
   console.log(`[Auth] OTP for ${email}: ${otp}`)
 
-  // 4. Send Email via Brevo SMTP
+  // 6. Send Email via Brevo SMTP
   try {
     await mailer.sendMail({
       from: `"Fine Finance" <${process.env.SMTP_FROM}>`,
@@ -72,84 +92,132 @@ export async function verifyOtp(rawEmail: string, rawToken: string) {
   const verifyResult = await verifySecureOtp(email, token)
   
   if (!verifyResult.success) {
-    return { error: verifyResult.error }
+    return { error: 'Invalid OTP' }
   }
 
-  // 3. Authorize with Supabase using Admin SDK
+  // 3. Check if user already exists
   const adminClient = await createAdminClient()
-  const supabase = await createClient()
+  const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers()
+  
+  if (listError) {
+    console.error('[Auth] Failed to check existing user:', listError)
+  }
 
-  // Generate a magic link token_hash for the user
-  let { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
-    type: 'magiclink',
-    email,
-  })
-  console.log(`[Auth] Link data:`, !!linkData, `Error:`, linkError?.message)
+  const userExists = users?.some(u => u.email?.toLowerCase() === email)
 
-  // If user doesn't exist, create them and try again
-  if (linkError?.message?.includes('User not found')) {
-    console.log(`[Auth] User ${email} not found. Creating new account...`)
-    const { error: createError } = await adminClient.auth.admin.createUser({
-      email,
-      email_confirm: true,
-    })
-    
-    if (createError) {
-      console.error('[Auth] User Creation Error:', createError)
-      return { error: `Failed to create account: ${createError.message}` }
-    }
+  // 4. If user exists, complete sign-in for Forgot Password flow
+  if (userExists) {
+    const supabase = await createClient()
 
-    // Try generating the link again
-    const retry = await adminClient.auth.admin.generateLink({
+    let { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
       type: 'magiclink',
       email,
     })
-    linkData = retry.data
-    linkError = retry.error
+
+    if (linkError || !linkData) {
+      console.error('[Auth] Supabase Link Error:', linkError)
+      return { error: `Authentication failed: ${linkError?.message || 'Unknown error'}` }
+    }
+
+    const properties = linkData.properties as any
+    const tokenHash = properties?.token_hash || properties?.hashed_token
+
+    if (!tokenHash) {
+      return { error: 'Session creation failed: Secure token not found. Please try again.' }
+    }
+
+    const { data, error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: 'magiclink',
+    })
+
+    if (verifyError) {
+      return { error: `Session creation failed: ${verifyError.message}` }
+    }
+
+    if (data.user) {
+      recordSession(data.user.id).catch(e => console.error('[Auth] Background session recording failed', e))
+    }
+
+    return { success: true, session: data.session, userExists: true }
   }
 
-  if (linkError || !linkData) {
-    console.error('[Auth] Supabase Link Error:', linkError)
-    return { error: `Authentication failed: ${linkError?.message || 'Unknown error'}` }
+  // If user does not exist (Signup flow), just return success
+  return { success: true, userExists: false }
+}
+
+export async function signupAndOnboard(rawEmail: string, username: string, password: string) {
+  const email = rawEmail.toLowerCase().trim()
+
+  // 1. Server-side validations
+  const usernameRegex = /^[A-Za-z]+$/
+  if (!usernameRegex.test(username)) {
+    return { error: 'Username must contain letters only.' }
+  }
+  if (username.length > 10) {
+    return { error: 'Username must be at most 10 characters long.' }
+  }
+  if (password.length < 8) {
+    return { error: 'Password must be at least 8 characters long.' }
   }
 
-  // Cast to any to safely access properties that might have different names in different SDK versions
-  const properties = linkData.properties as any
-  
-  if (!properties) {
-    console.error('[Auth] No properties found in linkData')
-    return { error: 'Session creation failed: Secure properties not found.' }
+  // 2. Double-check if email already exists
+  const adminClient = await createAdminClient()
+  const { data: { users } } = await adminClient.auth.admin.listUsers()
+  const userExists = users?.some(u => u.email?.toLowerCase() === email)
+  if (userExists) {
+    return { error: 'Email already registered' }
   }
 
-  console.log('[Auth] Link Generation Success. Properties:', Object.keys(properties))
-
-  // The token_hash might be under 'hashed_token' or 'token_hash' depending on the SDK version
-  const tokenHash = properties.token_hash || properties.hashed_token
-
-  if (!tokenHash) {
-    console.error('[Auth] No token hash found in properties:', properties)
-    return { error: 'Session creation failed: Secure token not found. Please try again.' }
-  }
-
-  // Use the token_hash to sign the user in and set cookies
-  const { data, error: verifyError } = await supabase.auth.verifyOtp({
-    token_hash: tokenHash,
-    type: 'magiclink',
+  // 3. Create the user account in Supabase
+  // Passwords are automatically hashed securely by Supabase Authentication
+  const { data: userData, error: createError } = await adminClient.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: {
+      full_name: username,
+      username: username,
+      onboarded: true
+    }
   })
 
-  if (verifyError) {
-    console.error('[Auth] Supabase Verify Error:', verifyError)
-    return { error: `Session creation failed: ${verifyError.message}` }
+  if (createError || !userData.user) {
+    console.error('[Auth] Signup User Creation Error:', createError)
+    return { error: `Failed to create user account: ${createError?.message || 'Unknown error'}` }
   }
 
-  // 4. Record Real Session Metadata
-  if (data.user) {
-    // We don't await this to keep the login fast, and use a timeout internally
-    recordSession(data.user.id).catch(e => console.error('[Auth] Background session recording failed', e))
+  // 4. Log the user in to create a session / JWT and set cookies
+  const supabase = await createClient()
+  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (signInError || !signInData.user) {
+    console.error('[Auth] Signin after signup failed:', signInError)
+    return { error: `Failed to create session: ${signInError?.message || 'Session creation failed'}` }
   }
 
-  return { success: true, session: data.session }
+  // 5. Automatically Create Private Workspace with Name "Personal Workspace"
+  try {
+    const { createWorkspace } = await import('@/app/actions/workspaces')
+    // createWorkspace automatically handles member & owner assignment,
+    // and database triggers automatically clone & seed categories/subcategories!
+    const wsRes = await createWorkspace('Personal Workspace', 'private')
+    if (wsRes.error) {
+      console.error('[Auth] Failed to create default workspace:', wsRes.error)
+    }
+  } catch (err) {
+    console.error('[Auth] Workspace import/execution failed:', err)
+  }
+
+  // 6. Record session metadata in background
+  recordSession(signInData.user.id).catch(e => console.error('[Auth] Background session recording failed', e))
+
+  return { success: true }
 }
+
 
 async function recordSession(userId: string) {
   try {

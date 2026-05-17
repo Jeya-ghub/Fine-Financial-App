@@ -7,9 +7,10 @@ import { cn } from '@/lib/utils'
 
 type UserMenuProps = {
   userEmail?: string
+  username?: string
 }
 
-export default function UserMenu({ userEmail }: UserMenuProps) {
+export default function UserMenu({ userEmail, username }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isConfirming, setIsConfirming] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -48,11 +49,11 @@ export default function UserMenu({ userEmail }: UserMenuProps) {
         className="flex items-center gap-3.5 px-4 py-2 rounded-2xl bg-surface border border-surface-border transition-all group cursor-pointer select-none hover:bg-surface-hover hover:border-surface-border-hover shadow-sm active:scale-95 w-full max-w-[260px]"
       >
         <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-[12px] font-black text-background shrink-0 shadow-lg shadow-primary/10">
-          {userEmail?.[0]?.toUpperCase() || 'U'}
+          {(username || userEmail)?.[0]?.toUpperCase() || 'U'}
         </div>
         <div className="hidden sm:flex flex-col text-left flex-1 min-w-0">
           <p className="text-[12px] font-black text-primary truncate leading-tight tracking-tight">
-            {userEmail?.split('@')[0]}
+            {username || userEmail?.split('@')[0]}
           </p>
           <p className="text-[10px] font-bold text-muted truncate leading-tight tracking-wide">
             {userEmail}

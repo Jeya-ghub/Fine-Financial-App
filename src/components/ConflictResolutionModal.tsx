@@ -46,7 +46,7 @@ export default function ConflictResolutionModal({ conflict, categories, onResolv
   const FIELDS = ['amount', 'type', 'date', 'category_id', 'description'] as const
 
   function isDifferent(field: string): boolean {
-    return String(local?.[field] ?? '') !== String(server?.[field] ?? '')
+    return String((local as any)?.[field] ?? '') !== String((server as any)?.[field] ?? '')
   }
 
   function handleManualSubmit() {
@@ -123,7 +123,7 @@ export default function ConflictResolutionModal({ conflict, categories, onResolv
                         <div className="min-w-0">
                           <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">{FIELD_LABELS[field]}</p>
                           <p className={cn("text-xs font-bold truncate", differs ? "text-white" : "text-zinc-500")}>
-                            {formatValue(field, local?.[field], categories)}
+                            {formatValue(field, (local as any)?.[field], categories)}
                           </p>
                         </div>
                         <div className="flex justify-center">
@@ -133,7 +133,7 @@ export default function ConflictResolutionModal({ conflict, categories, onResolv
                         <div className="min-w-0">
                           <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">{FIELD_LABELS[field]}</p>
                           <p className={cn("text-xs font-black truncate", differs ? "text-white" : "text-zinc-500")}>
-                            {formatValue(field, server?.[field], categories)}
+                            {formatValue(field, (server as any)?.[field], categories)}
                           </p>
                         </div>
                       </div>

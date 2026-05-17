@@ -1,5 +1,6 @@
 import { fetchDashboardData } from '@/services/dashboard.service'
 import { getActiveWorkspaceId, getWorkspaces } from '@/app/actions/workspaces'
+import { getUser } from '@/app/actions/auth'
 import { DashboardClient } from './DashboardClient'
 
 export default async function DashboardPage() {
@@ -23,5 +24,8 @@ export default async function DashboardPage() {
     console.error('[Dashboard Server] Prefetch Error:', err)
   }
 
-  return <DashboardClient initialData={initialData} />
+  const user = await getUser()
+  const username = user?.user_metadata?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'You'
+
+  return <DashboardClient initialData={initialData} username={username} />
 }

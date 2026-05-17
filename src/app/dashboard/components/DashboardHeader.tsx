@@ -13,12 +13,13 @@ import { useRouter } from 'next/navigation'
 
 type DashboardHeaderProps = {
   userEmail: string
+  username: string
   workspaceId: string
   categories: any[]
   workspaces: any[]
 }
 
-export default function DashboardHeader({ userEmail, workspaceId, categories, workspaces }: DashboardHeaderProps) {
+export default function DashboardHeader({ userEmail, username, workspaceId, categories, workspaces }: DashboardHeaderProps) {
   const router = useRouter()
   const { selectedMonth, setSelectedMonth, theme, toggleTheme } = useDashboardContext()
   const [isMonthSheetOpen, setIsMonthSheetOpen] = useState(false)
@@ -237,7 +238,7 @@ export default function DashboardHeader({ userEmail, workspaceId, categories, wo
           <div className="w-[1px] h-5 bg-surface-border mx-1" />
 
           {/* Avatar / User Menu */}
-          <UserMenu userEmail={userEmail} />
+          <UserMenu userEmail={userEmail} username={username} />
         </div>
       </header>
     </>
